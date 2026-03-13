@@ -1,4 +1,5 @@
-const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+const BACKEND = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const BASE = `${BACKEND}/api/v1`;
 
 async function fetchJSON<T>(url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE}${url}`, {
