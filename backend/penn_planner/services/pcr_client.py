@@ -70,7 +70,7 @@ class PCRClient:
         return await self.search_courses(
             semester=semester,
             search=f"{department}-",
-            page_size=200,
+            page_size=500,
         )
 
     async def get_courses_by_attribute(
@@ -82,7 +82,7 @@ class PCRClient:
         return await self.search_courses(
             semester=semester,
             attributes=attribute_expr,
-            page_size=200,
+            page_size=500,
         )
 
     async def get_attributes(self) -> list[dict]:
