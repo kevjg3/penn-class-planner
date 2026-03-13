@@ -4,11 +4,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from penn_planner.db import get_session
-from penn_planner.models import CourseAttribute, PlanCourse, RequirementAssignment
+from penn_planner.models import Course, CourseAttribute, PlanCourse, RequirementAssignment
 from penn_planner.schemas import (
     AssignmentRequest,
     CategoryProgressSchema,
+    GeneratedPlan,
     PlanEvaluationSchema,
+    PlanSlot,
+    PlanSlotOption,
     RequirementAssignmentSchema,
     RequirementStatusSchema,
 )
@@ -332,3 +335,165 @@ async def auto_assign(
         await session.refresh(a)
 
     return [RequirementAssignmentSchema.model_validate(a) for a in created]
+
+
+@router.get("/generate-plan", response_model=GeneratedPlan)
+async def generate_plan(
+    program: str = "seas_cs_bse",
+    prefer_easy: bool = True,
+    session: AsyncSession = Depends(get_session),
+):
+    """Generate a tentative plan to complete all remaining degree requirements.
+
+    For each unfulfilled requirement slot, finds the best course option
+    plus up to 3 alternatives, scored by quality, difficulty, and fit.
+    Uses a greedy assignment to avoid recommending the same course for
+    multiple slots.
+    """
+    engine, completed_courses, assignments, plan_courses = await _build_context(
+        session, program
+    )
+
+    # Count already completed
+    already_completed = sum(
+        1
+        for cat in engine.requirements.get("categories", [])
+        for req in cat.get("requirements", [])
+        if req["id"] in assignments
+    )
+
+    total_slots = sum(
+        len(cat.get("requirements", []))
+        for cat in engine.requirements.get("categories", [])
+    )
+
+    unfulfilled = engine.get_unfulfilled_requirements(assignments)
+
+    if not unfulfilled:
+        return GeneratedPlan(
+            program=program,
+            total_slots=total_slots,
+            filled_slots=total_slots,
+            already_completed=already_completed,
+            slots=[],
+        )
+
+    # Load all courses with attributes
+    from sqlalchemy.orm import selectinload
+
+    result = await session.execute(
+        select(Course).options(selectinload(Course.attributes))
+    )
+    all_courses = result.scalars().all()
+
+    # Build lookup: course_id -> (Course, [attr_codes])
+    course_lookup: dict[str, tuple[Course, list[str]]] = {}
+    for c in all_courses:
+        attrs = [a.attribute_code for a in c.attributes] if c.attributes else []
+        course_lookup[c.id] = (c, attrs)
+
+    # IDs already in the user's plan (completed or planned)
+    plan_ids = {pc.course_id for pc in plan_courses}
+
+    # Track which courses we've already assigned in this generated plan
+    used_courses: set[str] = set(plan_ids)
+
+    target_diff = 1.5 if prefer_easy else 2.5
+
+    def score_candidate(course: Course) -> float:
+        """Score a course for general desirability."""
+        s = 0.0
+        # Quality (0-40)
+        if course.course_quality is not None:
+            s += (course.course_quality / 4.0) * 40
+        else:
+            s += 20
+        # Difficulty match (0-30)
+        if course.difficulty is not None:
+            if prefer_easy:
+                s += max(0, 30 - course.difficulty * 7.5)
+            else:
+                s += max(0, 30 - abs(course.difficulty - target_diff) * 10)
+        else:
+            s += 15
+        # Popularity proxy (0-15)
+        import json
+
+        try:
+            sections = json.loads(course.sections_json or "[]")
+            s += min(len(sections) * 3, 15)
+        except (ValueError, TypeError):
+            s += 7.5
+        # Prereq bonus (0-15) — no prereqs = easier to take
+        if not (course.prerequisites or "").strip():
+            s += 15
+        else:
+            s += 5
+        return round(s, 1)
+
+    slots: list[PlanSlot] = []
+
+    # Process unfulfilled requirements — specific/choice first, then attribute, then any
+    # Sort so specific courses get first pick of the course pool
+    type_order = {"specific_course": 0, "choice": 1, "choice_or_attribute": 2, "attribute_filter": 3, "any": 4}
+    sorted_unfulfilled = sorted(unfulfilled, key=lambda r: type_order.get(r.get("type", ""), 5))
+
+    for req in sorted_unfulfilled:
+        # Find all courses that satisfy this requirement
+        candidates: list[tuple[Course, float]] = []
+        for cid, (course, attrs) in course_lookup.items():
+            if cid in used_courses:
+                continue
+            if engine.check_course_satisfies(cid, attrs, req):
+                candidates.append((course, score_candidate(course)))
+
+        # Sort by score descending
+        candidates.sort(key=lambda x: x[1], reverse=True)
+
+        recommended = None
+        alternatives: list[PlanSlotOption] = []
+
+        if candidates:
+            best_course, best_score = candidates[0]
+            recommended = PlanSlotOption(
+                course_id=best_course.id,
+                title=best_course.title,
+                difficulty=best_course.difficulty,
+                course_quality=best_course.course_quality,
+                score=best_score,
+            )
+            # Reserve this course
+            used_courses.add(best_course.id)
+
+            # Up to 3 alternatives (don't reserve them — user might swap)
+            for alt_course, alt_score in candidates[1:4]:
+                alternatives.append(
+                    PlanSlotOption(
+                        course_id=alt_course.id,
+                        title=alt_course.title,
+                        difficulty=alt_course.difficulty,
+                        course_quality=alt_course.course_quality,
+                        score=alt_score,
+                    )
+                )
+
+        slots.append(
+            PlanSlot(
+                requirement_id=req["id"],
+                requirement_name=req["name"],
+                category_id=req.get("category_id", ""),
+                category_name=req.get("category_name", ""),
+                recommended=recommended,
+                alternatives=alternatives,
+            )
+        )
+
+    filled_slots = already_completed + sum(1 for s in slots if s.recommended is not None)
+
+    return GeneratedPlan(
+        program=program,
+        total_slots=total_slots,
+        filled_slots=filled_slots,
+        already_completed=already_completed,
+        slots=slots,
+    )

@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useProgress, useAutoAssign } from "@/hooks/useRequirements";
 import { useAddPlanCourse, usePlanCourses, useUpdatePlanCourse } from "@/hooks/usePlan";
 import { useProgram } from "@/hooks/useProgram";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { RatingBadge } from "@/components/shared/RatingBadge";
 import { api } from "@/lib/api";
-import type { RequirementStatus } from "@/lib/types";
+import type { RequirementStatus, GeneratedPlan, PlanSlot } from "@/lib/types";
 
 export default function RequirementsPage() {
   const { program } = useProgram();
@@ -17,12 +17,17 @@ export default function RequirementsPage() {
   const addCourse = useAddPlanCourse();
   const updateCourse = useUpdatePlanCourse();
   const { data: planCourses } = usePlanCourses();
+  const queryClient = useQueryClient();
   const [expandedCats, setExpandedCats] = useState<Set<string>>(new Set());
   const [selectedSlot, setSelectedSlot] = useState<{
     requirementId: string;
     name: string;
   } | null>(null);
   const [slotSearch, setSlotSearch] = useState("");
+  const [showPlan, setShowPlan] = useState(false);
+  const [preferEasy, setPreferEasy] = useState(true);
+  // Track user swaps: requirement_id -> index into alternatives (0 = use recommended)
+  const [swaps, setSwaps] = useState<Record<string, number>>({});
 
   // Fetch candidates for the selected slot
   const slotParams: Record<string, string> = {};
@@ -35,6 +40,42 @@ export default function RequirementsPage() {
     queryFn: () => api.getSlotCandidates(slotParams),
     enabled: !!selectedSlot,
   });
+
+  // Generate plan query
+  const { data: generatedPlan, isLoading: planLoading, refetch: refetchPlan } = useQuery({
+    queryKey: ["generate-plan", program, preferEasy],
+    queryFn: () => api.generatePlan({ program, prefer_easy: String(preferEasy) }),
+    enabled: showPlan,
+  });
+
+  // Get the chosen option for a slot (recommended or swapped alternative)
+  const getChosenOption = (slot: PlanSlot) => {
+    const swapIdx = swaps[slot.requirement_id];
+    if (swapIdx !== undefined && swapIdx > 0 && slot.alternatives[swapIdx - 1]) {
+      return slot.alternatives[swapIdx - 1];
+    }
+    return slot.recommended;
+  };
+
+  // Add all generated plan courses to the user's plan
+  const handleAddAllToPlan = async () => {
+    if (!generatedPlan) return;
+    for (const slot of generatedPlan.slots) {
+      const chosen = getChosenOption(slot);
+      if (!chosen) continue;
+      try {
+        await addCourse.mutateAsync({
+          course_id: chosen.course_id,
+          semester: "",
+          status: "planned",
+        });
+      } catch {
+        // skip duplicates
+      }
+    }
+    queryClient.invalidateQueries({ queryKey: ["progress"] });
+    queryClient.invalidateQueries({ queryKey: ["plan-courses"] });
+  };
 
   if (isLoading) return <LoadingSpinner />;
   if (!progress) return <p className="text-slate-500">No data</p>;
@@ -90,16 +131,27 @@ export default function RequirementsPage() {
             {progress.total_cu_completed} / {progress.total_cu_required} CU completed ({pct}%)
           </p>
         </div>
-        <button
-          onClick={() => autoAssign.mutate(program)}
-          disabled={autoAssign.isPending}
-          className="bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-blue-700 disabled:opacity-50 transition-colors shadow-sm flex items-center gap-2"
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
-          {autoAssign.isPending ? "Assigning..." : "Auto-Assign"}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => autoAssign.mutate(program)}
+            disabled={autoAssign.isPending}
+            className="bg-slate-100 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-slate-200 disabled:opacity-50 transition-colors flex items-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            {autoAssign.isPending ? "Assigning..." : "Auto-Assign"}
+          </button>
+          <button
+            onClick={() => { setShowPlan(!showPlan); if (!showPlan) refetchPlan(); }}
+            className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-sm flex items-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+            {showPlan ? "Hide Plan" : "Generate Plan"}
+          </button>
+        </div>
       </div>
 
       {/* Overall progress bar */}
@@ -126,6 +178,169 @@ export default function RequirementsPage() {
           Click a <strong>fulfilled</strong> slot to toggle its completion status.
         </p>
       </div>
+
+      {/* Generated Plan */}
+      {showPlan && (
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm mb-6 overflow-hidden">
+          <div className="p-5 border-b border-slate-100">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <svg className="w-5 h-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                  </svg>
+                  Suggested Degree Completion Plan
+                </h2>
+                {generatedPlan && (
+                  <p className="text-xs text-slate-500 mt-1">
+                    {generatedPlan.already_completed} completed · {generatedPlan.slots.length} remaining · {generatedPlan.total_slots} total slots
+                  </p>
+                )}
+              </div>
+              <div className="flex items-center gap-3">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={preferEasy}
+                    onChange={(e) => setPreferEasy(e.target.checked)}
+                    className="rounded text-blue-600 w-4 h-4"
+                  />
+                  <span className="text-xs text-slate-600 font-medium">Prefer easier</span>
+                </label>
+                {generatedPlan && generatedPlan.slots.length > 0 && (
+                  <button
+                    onClick={handleAddAllToPlan}
+                    disabled={addCourse.isPending}
+                    className="bg-emerald-600 text-white px-4 py-2 rounded-lg text-xs font-semibold hover:bg-emerald-700 disabled:opacity-50 transition-colors shadow-sm"
+                  >
+                    Add All to Plan
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {planLoading && (
+            <div className="p-8"><LoadingSpinner /></div>
+          )}
+
+          {generatedPlan && generatedPlan.slots.length === 0 && (
+            <div className="p-8 text-center">
+              <div className="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-3">
+                <svg className="w-7 h-7 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <p className="text-sm font-semibold text-slate-900">All requirements fulfilled!</p>
+              <p className="text-xs text-slate-500 mt-1">Your degree is complete.</p>
+            </div>
+          )}
+
+          {generatedPlan && generatedPlan.slots.length > 0 && (
+            <div className="divide-y divide-slate-100">
+              {/* Group by category */}
+              {(() => {
+                const grouped: Record<string, PlanSlot[]> = {};
+                for (const slot of generatedPlan.slots) {
+                  const key = slot.category_id;
+                  if (!grouped[key]) grouped[key] = [];
+                  grouped[key].push(slot);
+                }
+                return Object.entries(grouped).map(([catId, catSlots]) => (
+                  <div key={catId}>
+                    <div className="px-5 py-2.5 bg-slate-50/80">
+                      <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                        {catSlots[0].category_name}
+                      </h3>
+                    </div>
+                    <div className="divide-y divide-slate-50">
+                      {catSlots.map((slot) => {
+                        const chosen = getChosenOption(slot);
+                        const swapIdx = swaps[slot.requirement_id] || 0;
+                        const allOptions = [
+                          slot.recommended,
+                          ...slot.alternatives,
+                        ].filter(Boolean);
+
+                        return (
+                          <div key={slot.requirement_id} className="px-5 py-3 hover:bg-slate-50/50 transition-colors">
+                            <div className="flex items-center justify-between">
+                              <div className="flex-1 min-w-0">
+                                <p className="text-xs text-slate-500 mb-0.5">{slot.requirement_name}</p>
+                                {chosen ? (
+                                  <div className="flex items-center gap-2.5">
+                                    <span className="font-mono font-bold text-sm text-blue-700">
+                                      {chosen.course_id}
+                                    </span>
+                                    <span className="text-sm text-slate-700 truncate">
+                                      {chosen.title}
+                                    </span>
+                                    {chosen.course_quality != null && (
+                                      <span className="text-[10px] bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded-md font-medium">
+                                        Q: {chosen.course_quality.toFixed(1)}
+                                      </span>
+                                    )}
+                                    {chosen.difficulty != null && (
+                                      <span className="text-[10px] bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded-md font-medium">
+                                        D: {chosen.difficulty.toFixed(1)}
+                                      </span>
+                                    )}
+                                  </div>
+                                ) : (
+                                  <span className="text-sm text-red-500 italic">No matching course found</span>
+                                )}
+                              </div>
+
+                              {/* Swap arrows if alternatives exist */}
+                              {allOptions.length > 1 && (
+                                <div className="flex items-center gap-1 ml-3">
+                                  <button
+                                    onClick={() =>
+                                      setSwaps((prev) => ({
+                                        ...prev,
+                                        [slot.requirement_id]:
+                                          ((swapIdx - 1 + allOptions.length) % allOptions.length),
+                                      }))
+                                    }
+                                    className="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
+                                    title="Previous option"
+                                  >
+                                    <svg className="w-3.5 h-3.5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                                    </svg>
+                                  </button>
+                                  <span className="text-[10px] text-slate-400 font-medium w-8 text-center">
+                                    {swapIdx + 1}/{allOptions.length}
+                                  </span>
+                                  <button
+                                    onClick={() =>
+                                      setSwaps((prev) => ({
+                                        ...prev,
+                                        [slot.requirement_id]:
+                                          ((swapIdx + 1) % allOptions.length),
+                                      }))
+                                    }
+                                    className="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
+                                    title="Next option"
+                                  >
+                                    <svg className="w-3.5 h-3.5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                                    </svg>
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ));
+              })()}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Categories */}
       <div className="space-y-3">

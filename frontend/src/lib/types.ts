@@ -98,3 +98,28 @@ export interface AttributeInfo {
   description: string;
   count: number;
 }
+
+export interface PlanSlotOption {
+  course_id: string;
+  title: string;
+  difficulty: number | null;
+  course_quality: number | null;
+  score: number;
+}
+
+export interface PlanSlot {
+  requirement_id: string;
+  requirement_name: string;
+  category_id: string;
+  category_name: string;
+  recommended: PlanSlotOption | null;
+  alternatives: PlanSlotOption[];
+}
+
+export interface GeneratedPlan {
+  program: string;
+  total_slots: number;
+  filled_slots: number;
+  already_completed: number;
+  slots: PlanSlot[];
+}

@@ -80,6 +80,12 @@ export const api = {
   getAttributes: () =>
     fetchJSON<import("./types").AttributeInfo[]>("/courses/attributes"),
 
+  // Generate plan
+  generatePlan: (params?: Record<string, string>) =>
+    fetchJSON<import("./types").GeneratedPlan>(
+      `/requirements/generate-plan${params ? "?" + new URLSearchParams(params) : ""}`
+    ),
+
   // Recommendations
   getRecommendations: (params?: Record<string, string>) =>
     fetchJSON<import("./types").Recommendation[]>(

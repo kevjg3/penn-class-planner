@@ -108,3 +108,30 @@ class RecommendationSchema(BaseModel):
     reasons: list[str]
     fulfills_requirements: list[str]
     score_breakdown: ScoreBreakdownSchema
+
+
+# --- Plan Generation schemas ---
+
+class PlanSlotOption(BaseModel):
+    course_id: str
+    title: str
+    difficulty: float | None = None
+    course_quality: float | None = None
+    score: float = 0.0
+
+
+class PlanSlot(BaseModel):
+    requirement_id: str
+    requirement_name: str
+    category_id: str
+    category_name: str
+    recommended: PlanSlotOption | None = None
+    alternatives: list[PlanSlotOption] = []
+
+
+class GeneratedPlan(BaseModel):
+    program: str
+    total_slots: int
+    filled_slots: int
+    already_completed: int
+    slots: list[PlanSlot]
