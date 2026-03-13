@@ -8,7 +8,7 @@ import { useProgram } from "@/hooks/useProgram";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { RatingBadge } from "@/components/shared/RatingBadge";
 import { api } from "@/lib/api";
-import type { RequirementStatus, GeneratedPlan, PlanSlot } from "@/lib/types";
+import type { RequirementStatus, PlanSlot } from "@/lib/types";
 
 export default function RequirementsPage() {
   const { program } = useProgram();
