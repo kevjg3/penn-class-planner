@@ -17,18 +17,25 @@ export default function RecommendationsPage() {
   const [maxDifficulty, setMaxDifficulty] = useState("");
   const [semester, setSemester] = useState("2026C");
   const [attribute, setAttribute] = useState("");
+  const [department, setDepartment] = useState("");
+  const [visibleCount, setVisibleCount] = useState(20);
 
   const { program } = useProgram();
-  const params: Record<string, string> = { n: "20", prefer_easy: String(preferEasy), program };
+  const params: Record<string, string> = { n: "100", prefer_easy: String(preferEasy), program };
   if (category) params.category = category;
   if (maxDifficulty) params.max_difficulty = maxDifficulty;
   if (attribute) params.attribute = attribute;
+  if (department) params.department = department;
 
   const { data: recs, isLoading } = useRecommendations(params);
   const { data: progress } = useProgress(program);
   const { data: attributes } = useQuery({
     queryKey: ["attributes"],
     queryFn: api.getAttributes,
+  });
+  const { data: departments } = useQuery({
+    queryKey: ["departments"],
+    queryFn: api.getDepartments,
   });
   const addCourse = useAddPlanCourse();
 
@@ -110,6 +117,23 @@ export default function RecommendationsPage() {
           </div>
           <div>
             <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
+              Department
+            </label>
+            <select
+              value={department}
+              onChange={(e) => { setDepartment(e.target.value); setVisibleCount(20); }}
+              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-400 cursor-pointer"
+            >
+              <option value="">All Departments</option>
+              {departments?.map((d) => (
+                <option key={d.code} value={d.code}>
+                  {d.code} ({d.count})
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
               Planning Semester
             </label>
             <select
@@ -141,8 +165,10 @@ export default function RecommendationsPage() {
 
       {recs && (
         <div className="space-y-3">
-          <p className="text-xs font-medium text-slate-500">{recs.length} recommendations</p>
-          {recs.map((rec, i) => (
+          <p className="text-xs font-medium text-slate-500">
+            Showing {Math.min(visibleCount, recs.length)} of {recs.length} recommendations
+          </p>
+          {recs.slice(0, visibleCount).map((rec, i) => (
             <div
               key={rec.course.id}
               className="bg-white rounded-2xl border border-slate-200 p-5 hover:border-blue-200 hover:shadow-sm transition-all shadow-sm"
@@ -202,6 +228,17 @@ export default function RecommendationsPage() {
               </div>
             </div>
           ))}
+
+          {recs.length > visibleCount && (
+            <div className="flex justify-center pt-2">
+              <button
+                onClick={() => setVisibleCount((c) => c + 20)}
+                className="px-6 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm"
+              >
+                Load More ({recs.length - visibleCount} remaining)
+              </button>
+            </div>
+          )}
 
           {recs.length === 0 && (
             <div className="text-center py-16">

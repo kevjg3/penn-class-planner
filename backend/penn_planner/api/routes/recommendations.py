@@ -18,13 +18,14 @@ router = APIRouter(prefix="/recommendations", tags=["recommendations"])
 
 @router.get("/", response_model=list[RecommendationSchema])
 async def get_recommendations(
-    n: int = Query(default=10, le=50),
+    n: int = Query(default=10, le=200),
     category: str | None = None,
     max_difficulty: float | None = None,
     min_quality: float | None = None,
     prefer_easy: bool = True,
     program: str = "seas_cs_bse",
     attribute: str | None = None,
+    department: str | None = None,
     session: AsyncSession = Depends(get_session),
 ):
     """Get personalized course recommendations."""
@@ -70,6 +71,8 @@ async def get_recommendations(
         stmt = stmt.join(CourseAttribute).where(
             CourseAttribute.attribute_code.in_(attr_codes)
         ).distinct()
+    if department:
+        stmt = stmt.where(Course.id.like(f"{department}-%"))
 
     result = await session.execute(stmt)
     all_courses = result.scalars().all()
