@@ -113,6 +113,7 @@ export default function RequirementsPage() {
         course_id: courseId,
         semester: "",
         status: "completed",
+        target_requirement_id: selectedSlot?.requirementId,
       });
       setSelectedSlot(null);
     } catch (e) {

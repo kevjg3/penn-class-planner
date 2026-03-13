@@ -18,8 +18,19 @@ from penn_planner.services.requirement_engine import RequirementEngine
 router = APIRouter(prefix="/plan", tags=["plan"])
 
 
-async def _run_auto_assign(session: AsyncSession):
-    """Re-run auto-assign for all plan courses after any plan change."""
+async def _run_auto_assign(
+    session: AsyncSession,
+    pinned: dict[str, str] | None = None,
+):
+    """Re-run auto-assign for all plan courses after any plan change.
+
+    Args:
+        pinned: optional dict of {requirement_id: course_id} that must be
+                respected — these assignments are created first and the
+                auto-assign algorithm works around them.
+    """
+    pinned = pinned or {}
+
     # Get current program
     pref = await session.get(UserPreference, "selected_program")
     program = pref.value if pref else "seas_cs_bse"
@@ -49,8 +60,8 @@ async def _run_auto_assign(session: AsyncSession):
         for a in pc.assignments:
             await session.delete(a)
 
-    # Run auto-assignment
-    new_assignments = engine.auto_assign(completed_courses)
+    # Run auto-assignment with pinned constraints
+    new_assignments = engine.auto_assign(completed_courses, pinned=pinned)
 
     # Build course_id -> plan_course_id mapping
     course_to_plan: dict[str, int] = {pc.course_id: pc.id for pc in plan_courses}
@@ -126,8 +137,13 @@ async def add_plan_course(
     session.add(pc)
     await session.flush()
 
-    # Auto-assign all courses to requirements
-    await _run_auto_assign(session)
+    # If a target requirement was specified (from slot-fill modal), pin it
+    pinned: dict[str, str] = {}
+    if body.target_requirement_id:
+        pinned[body.target_requirement_id] = body.course_id
+
+    # Auto-assign all courses to requirements, respecting pinned
+    await _run_auto_assign(session, pinned=pinned)
 
     await session.commit()
     await session.refresh(pc, ["course", "assignments"])

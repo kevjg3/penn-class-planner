@@ -192,14 +192,26 @@ class RequirementEngine:
     def auto_assign(
         self,
         completed_courses: dict[str, list[str]],
+        pinned: dict[str, str] | None = None,
     ) -> dict[str, str]:
         """Auto-assign completed courses to requirement slots.
 
         Uses greedy approach: assign specific_course/choice requirements first,
         then attribute-based, then any.
+
+        Args:
+            pinned: optional dict of {requirement_id: course_id} that are
+                    pre-assigned and must be respected by the algorithm.
         """
         assignments: dict[str, str] = {}
         used_courses: set[str] = set()
+
+        # Honour pinned assignments first
+        if pinned:
+            for req_id, course_id in pinned.items():
+                if course_id in completed_courses:
+                    assignments[req_id] = course_id
+                    used_courses.add(course_id)
 
         # Pass 1: specific_course and choice (exact matches)
         for category in self.requirements.get("categories", []):

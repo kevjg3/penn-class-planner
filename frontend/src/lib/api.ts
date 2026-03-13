@@ -33,7 +33,7 @@ export const api = {
     fetchJSON<import("./types").PlanCourse[]>(
       `/plan/courses${params ? "?" + new URLSearchParams(params) : ""}`
     ),
-  addPlanCourse: (body: { course_id: string; semester: string; status: string }) =>
+  addPlanCourse: (body: { course_id: string; semester: string; status: string; target_requirement_id?: string }) =>
     fetchJSON<import("./types").PlanCourse>("/plan/courses", {
       method: "POST",
       body: JSON.stringify(body),

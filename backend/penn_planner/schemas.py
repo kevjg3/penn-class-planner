@@ -34,6 +34,7 @@ class AddPlanCourseRequest(BaseModel):
     course_id: str
     semester: str = ""
     status: str = "completed"
+    target_requirement_id: str | None = None
 
 
 class UpdatePlanCourseRequest(BaseModel):
