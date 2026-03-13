@@ -1,0 +1,288 @@
+{
+  "degree": "SEAS CS BSE",
+  "program": "EU_BSE_CSCI",
+  "total_cu": 37,
+  "categories": [
+    {
+      "id": "core_cis",
+      "name": "CIS Core",
+      "requirements": [
+        {
+          "id": "core_cis.cis_1100",
+          "name": "CIS 1100",
+          "type": "specific_course",
+          "courses": ["CIS-1100"],
+          "cu": 1
+        },
+        {
+          "id": "core_cis.cis_1200",
+          "name": "CIS 1200",
+          "type": "specific_course",
+          "courses": ["CIS-1200"],
+          "cu": 1
+        },
+        {
+          "id": "core_cis.cis_1210",
+          "name": "CIS 1210",
+          "type": "specific_course",
+          "courses": ["CIS-1210"],
+          "cu": 1
+        },
+        {
+          "id": "core_cis.cis_1600",
+          "name": "CIS 1600",
+          "type": "specific_course",
+          "courses": ["CIS-1600"],
+          "cu": 1
+        },
+        {
+          "id": "core_cis.cis_2400",
+          "name": "CIS 2400",
+          "type": "specific_course",
+          "courses": ["CIS-2400"],
+          "cu": 1
+        },
+        {
+          "id": "core_cis.cis_2620",
+          "name": "CIS 2620",
+          "type": "specific_course",
+          "courses": ["CIS-2620"],
+          "cu": 1
+        },
+        {
+          "id": "core_cis.cis_3200",
+          "name": "CIS 3200",
+          "type": "specific_course",
+          "courses": ["CIS-3200"],
+          "cu": 1
+        },
+        {
+          "id": "core_cis.cis_4480",
+          "name": "CIS 4480",
+          "type": "specific_course",
+          "courses": ["CIS-4480"],
+          "cu": 1
+        },
+        {
+          "id": "core_cis.cis_4710",
+          "name": "CIS 4710",
+          "type": "specific_course",
+          "courses": ["CIS-4710"],
+          "cu": 1
+        },
+        {
+          "id": "core_cis.senior_design",
+          "name": "Senior Design",
+          "type": "choice",
+          "courses": ["CIS-4000", "CIS-4010", "CIS-4100", "CIS-4110", "CIS-4980"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "cis_electives",
+      "name": "CIS Electives",
+      "description": "4 CIS/NETS electives at 1000-level or above",
+      "requirements": [
+        {
+          "id": "cis_electives.1",
+          "name": "CIS Elective 1",
+          "type": "attribute_filter",
+          "attribute_codes": ["EUCR", "EUCU"],
+          "dept_filter": ["CIS", "NETS"],
+          "cu": 1
+        },
+        {
+          "id": "cis_electives.2",
+          "name": "CIS Elective 2",
+          "type": "attribute_filter",
+          "attribute_codes": ["EUCR", "EUCU"],
+          "dept_filter": ["CIS", "NETS"],
+          "cu": 1
+        },
+        {
+          "id": "cis_electives.3",
+          "name": "CIS Elective 3",
+          "type": "attribute_filter",
+          "attribute_codes": ["EUCR", "EUCU"],
+          "dept_filter": ["CIS", "NETS"],
+          "cu": 1
+        },
+        {
+          "id": "cis_electives.4",
+          "name": "CIS Elective 4",
+          "type": "attribute_filter",
+          "attribute_codes": ["EUCR", "EUCU"],
+          "dept_filter": ["CIS", "NETS"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "tech_electives",
+      "name": "Technical Electives",
+      "description": "6 technical electives from approved lists",
+      "requirements": [
+        {
+          "id": "tech_electives.1",
+          "name": "Tech Elective 1",
+          "type": "attribute_filter",
+          "attribute_codes": ["EUCR", "EUCU", "EUMS"],
+          "cu": 1
+        },
+        {
+          "id": "tech_electives.2",
+          "name": "Tech Elective 2",
+          "type": "attribute_filter",
+          "attribute_codes": ["EUCR", "EUCU", "EUMS"],
+          "cu": 1
+        },
+        {
+          "id": "tech_electives.3",
+          "name": "Tech Elective 3",
+          "type": "attribute_filter",
+          "attribute_codes": ["EUCR", "EUCU", "EUMS"],
+          "cu": 1
+        },
+        {
+          "id": "tech_electives.4",
+          "name": "Tech Elective 4",
+          "type": "attribute_filter",
+          "attribute_codes": ["EUCR", "EUCU", "EUMS"],
+          "cu": 1
+        },
+        {
+          "id": "tech_electives.5",
+          "name": "Tech Elective 5",
+          "type": "attribute_filter",
+          "attribute_codes": ["EUCR", "EUCU", "EUMS"],
+          "cu": 1
+        },
+        {
+          "id": "tech_electives.6",
+          "name": "Tech Elective 6",
+          "type": "attribute_filter",
+          "attribute_codes": ["EUCR", "EUCU", "EUMS"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "math",
+      "name": "Mathematics",
+      "requirements": [
+        {
+          "id": "math.calc_1",
+          "name": "Calculus I",
+          "type": "specific_course",
+          "courses": ["MATH-1400"],
+          "cu": 1
+        },
+        {
+          "id": "math.calc_2",
+          "name": "Calculus II",
+          "type": "choice",
+          "courses": ["MATH-1410", "MATH-1610"],
+          "cu": 1
+        },
+        {
+          "id": "math.linear_algebra",
+          "name": "Linear Algebra",
+          "type": "choice",
+          "courses": ["MATH-2400", "MATH-2600", "MATH-3120", "MATH-3130", "MATH-3140", "ESE-2030"],
+          "cu": 1
+        },
+        {
+          "id": "math.probability",
+          "name": "Probability/Statistics",
+          "type": "choice",
+          "courses": ["CIS-2620", "ESE-3010", "STAT-4300", "ENM-3210"],
+          "cu": 1,
+          "note": "CIS 2620 also counts for core; if used for core, take a different probability course"
+        }
+      ]
+    },
+    {
+      "id": "natural_science",
+      "name": "Natural Science",
+      "requirements": [
+        {
+          "id": "natural_science.physics_1",
+          "name": "Physics I (Mechanics)",
+          "type": "choice",
+          "courses": ["PHYS-0140", "PHYS-0150", "PHYS-0170", "MEAM-1100"],
+          "cu": 1
+        },
+        {
+          "id": "natural_science.physics_2",
+          "name": "Physics II (E&M)",
+          "type": "choice",
+          "courses": ["PHYS-0141", "PHYS-0151", "PHYS-0171", "ESE-1120", "MEAM-1470"],
+          "cu": 1
+        },
+        {
+          "id": "natural_science.elective",
+          "name": "Math/Science Elective",
+          "type": "attribute_filter",
+          "attribute_codes": ["EUMS", "EUNS"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "general_ed",
+      "name": "General Education",
+      "requirements": [
+        {
+          "id": "general_ed.writing",
+          "name": "Writing Seminar",
+          "type": "attribute_filter",
+          "attribute_codes": ["AUWR"],
+          "cu": 1
+        },
+        {
+          "id": "general_ed.social_science_1",
+          "name": "Social Science 1",
+          "type": "attribute_filter",
+          "attribute_codes": ["EUSS"],
+          "cu": 1
+        },
+        {
+          "id": "general_ed.social_science_2",
+          "name": "Social Science 2",
+          "type": "attribute_filter",
+          "attribute_codes": ["EUSS"],
+          "cu": 1
+        },
+        {
+          "id": "general_ed.humanities_1",
+          "name": "Humanities 1",
+          "type": "attribute_filter",
+          "attribute_codes": ["EUHS"],
+          "cu": 1
+        },
+        {
+          "id": "general_ed.humanities_2",
+          "name": "Humanities 2",
+          "type": "attribute_filter",
+          "attribute_codes": ["EUHS"],
+          "cu": 1
+        },
+        {
+          "id": "general_ed.ethics",
+          "name": "Engineering Ethics / TBS",
+          "type": "choice_or_attribute",
+          "courses": ["EAS-2030", "CIS-4230", "CIS-5230", "LAWM-5060"],
+          "attribute_codes": ["EUTB"],
+          "cu": 1
+        },
+        {
+          "id": "general_ed.free_elective",
+          "name": "Free Elective",
+          "type": "any",
+          "cu": 1
+        }
+      ]
+    }
+  ]
+}

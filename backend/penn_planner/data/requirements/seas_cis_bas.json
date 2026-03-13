@@ -1,0 +1,270 @@
+{
+  "degree": "SEAS CIS BAS (Applied Science)",
+  "program": "EU_BAS_CSCI",
+  "total_cu": 40,
+  "categories": [
+    {
+      "id": "cis_core",
+      "name": "CIS Core",
+      "requirements": [
+        {
+          "id": "cis_core.cis_1100",
+          "name": "CIS 1100",
+          "type": "specific_course",
+          "courses": ["CIS-1100"],
+          "cu": 1
+        },
+        {
+          "id": "cis_core.cis_1200",
+          "name": "CIS 1200",
+          "type": "specific_course",
+          "courses": ["CIS-1200"],
+          "cu": 1
+        },
+        {
+          "id": "cis_core.cis_1210",
+          "name": "CIS 1210",
+          "type": "specific_course",
+          "courses": ["CIS-1210"],
+          "cu": 1
+        },
+        {
+          "id": "cis_core.cis_1600",
+          "name": "CIS 1600",
+          "type": "specific_course",
+          "courses": ["CIS-1600"],
+          "cu": 1
+        },
+        {
+          "id": "cis_core.cis_2400",
+          "name": "CIS 2400",
+          "type": "specific_course",
+          "courses": ["CIS-2400"],
+          "cu": 1
+        },
+        {
+          "id": "cis_core.cis_2620",
+          "name": "CIS 2620",
+          "type": "specific_course",
+          "courses": ["CIS-2620"],
+          "cu": 1
+        },
+        {
+          "id": "cis_core.cis_3200",
+          "name": "CIS 3200",
+          "type": "specific_course",
+          "courses": ["CIS-3200"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "cis_electives",
+      "name": "CIS Electives",
+      "description": "6 CIS electives",
+      "requirements": [
+        {
+          "id": "cis_electives.1",
+          "name": "CIS Elective 1",
+          "type": "attribute_filter",
+          "attribute_codes": ["EUCR", "EUCU"],
+          "dept_filter": ["CIS", "NETS"],
+          "cu": 1
+        },
+        {
+          "id": "cis_electives.2",
+          "name": "CIS Elective 2",
+          "type": "attribute_filter",
+          "attribute_codes": ["EUCR", "EUCU"],
+          "dept_filter": ["CIS", "NETS"],
+          "cu": 1
+        },
+        {
+          "id": "cis_electives.3",
+          "name": "CIS Elective 3",
+          "type": "attribute_filter",
+          "attribute_codes": ["EUCR", "EUCU"],
+          "dept_filter": ["CIS", "NETS"],
+          "cu": 1
+        },
+        {
+          "id": "cis_electives.4",
+          "name": "CIS Elective 4",
+          "type": "attribute_filter",
+          "attribute_codes": ["EUCR", "EUCU"],
+          "dept_filter": ["CIS", "NETS"],
+          "cu": 1
+        },
+        {
+          "id": "cis_electives.5",
+          "name": "CIS Elective 5",
+          "type": "attribute_filter",
+          "attribute_codes": ["EUCR", "EUCU"],
+          "dept_filter": ["CIS", "NETS"],
+          "cu": 1
+        },
+        {
+          "id": "cis_electives.6",
+          "name": "CIS Elective 6",
+          "type": "attribute_filter",
+          "attribute_codes": ["EUCR", "EUCU"],
+          "dept_filter": ["CIS", "NETS"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "math",
+      "name": "Mathematics",
+      "requirements": [
+        {
+          "id": "math.calc_1",
+          "name": "Calculus I",
+          "type": "specific_course",
+          "courses": ["MATH-1400"],
+          "cu": 1
+        },
+        {
+          "id": "math.calc_2",
+          "name": "Calculus II",
+          "type": "choice",
+          "courses": ["MATH-1410", "MATH-1610"],
+          "cu": 1
+        },
+        {
+          "id": "math.linear_algebra",
+          "name": "Linear Algebra",
+          "type": "choice",
+          "courses": ["MATH-2400", "MATH-2600", "MATH-3120", "MATH-3130"],
+          "cu": 1
+        },
+        {
+          "id": "math.probability",
+          "name": "Probability/Statistics",
+          "type": "choice",
+          "courses": ["CIS-2620", "ESE-3010", "STAT-4300", "ENM-3210"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "natural_science",
+      "name": "Natural Science",
+      "requirements": [
+        {
+          "id": "natural_science.physics_1",
+          "name": "Physics I (Mechanics)",
+          "type": "choice",
+          "courses": ["PHYS-0140", "PHYS-0150", "PHYS-0170"],
+          "cu": 1
+        },
+        {
+          "id": "natural_science.physics_2",
+          "name": "Physics II (E&M)",
+          "type": "choice",
+          "courses": ["PHYS-0141", "PHYS-0151", "PHYS-0171", "ESE-1120"],
+          "cu": 1
+        },
+        {
+          "id": "natural_science.elective",
+          "name": "Natural Science Elective",
+          "type": "attribute_filter",
+          "attribute_codes": ["EUNS", "EUMA"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "arts_sciences",
+      "name": "Arts & Sciences (CAS Sector)",
+      "description": "BAS requires CAS sector courses",
+      "requirements": [
+        {
+          "id": "arts_sciences.society_1",
+          "name": "Society 1",
+          "type": "attribute_filter",
+          "attribute_codes": ["QS", "EUSS"],
+          "cu": 1
+        },
+        {
+          "id": "arts_sciences.society_2",
+          "name": "Society 2",
+          "type": "attribute_filter",
+          "attribute_codes": ["QS", "EUSS"],
+          "cu": 1
+        },
+        {
+          "id": "arts_sciences.humanities_1",
+          "name": "Humanities 1",
+          "type": "attribute_filter",
+          "attribute_codes": ["QU", "EUHS"],
+          "cu": 1
+        },
+        {
+          "id": "arts_sciences.humanities_2",
+          "name": "Humanities 2",
+          "type": "attribute_filter",
+          "attribute_codes": ["QU", "EUHS"],
+          "cu": 1
+        },
+        {
+          "id": "arts_sciences.history",
+          "name": "History & Tradition",
+          "type": "attribute_filter",
+          "attribute_codes": ["QT"],
+          "cu": 1
+        },
+        {
+          "id": "arts_sciences.writing",
+          "name": "Writing Requirement",
+          "type": "attribute_filter",
+          "attribute_codes": ["AUWR"],
+          "cu": 1
+        },
+        {
+          "id": "arts_sciences.tbs",
+          "name": "Tech, Business & Society",
+          "type": "attribute_filter",
+          "attribute_codes": ["EUTB"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "free_electives",
+      "name": "Free Electives",
+      "requirements": [
+        {
+          "id": "free_electives.1",
+          "name": "Free Elective 1",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.2",
+          "name": "Free Elective 2",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.3",
+          "name": "Free Elective 3",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.4",
+          "name": "Free Elective 4",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.5",
+          "name": "Free Elective 5",
+          "type": "any",
+          "cu": 1
+        }
+      ]
+    }
+  ]
+}

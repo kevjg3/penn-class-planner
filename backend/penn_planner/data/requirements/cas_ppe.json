@@ -1,0 +1,258 @@
+{
+  "degree": "CAS PPE (Philosophy, Politics, Economics) BA",
+  "program": "AU_BA_PPE",
+  "total_cu": 37,
+  "categories": [
+    {
+      "id": "ppe_core",
+      "name": "PPE Core",
+      "requirements": [
+        {
+          "id": "ppe_core.ppe_intro",
+          "name": "PPE 0500 - Intro to PPE",
+          "type": "specific_course",
+          "courses": ["PPE-0500"],
+          "cu": 1
+        },
+        {
+          "id": "ppe_core.econ_micro",
+          "name": "ECON 0100 - Intro Micro",
+          "type": "specific_course",
+          "courses": ["ECON-0100"],
+          "cu": 1
+        },
+        {
+          "id": "ppe_core.econ_macro",
+          "name": "ECON 0200 - Intro Macro",
+          "type": "specific_course",
+          "courses": ["ECON-0200"],
+          "cu": 1
+        },
+        {
+          "id": "ppe_core.phil_intro",
+          "name": "PHIL 1000 - Intro to Philosophy",
+          "type": "choice",
+          "courses": ["PHIL-1000", "PHIL-1710"],
+          "cu": 1
+        },
+        {
+          "id": "ppe_core.psci_intro",
+          "name": "PSCI 1100 - Intro American Politics (or equivalent)",
+          "type": "choice",
+          "courses": ["PSCI-1100", "PSCI-1200", "PSCI-1400", "PSCI-1600"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "ppe_electives",
+      "name": "PPE Electives",
+      "description": "7 upper-level PPE electives",
+      "requirements": [
+        {
+          "id": "ppe_electives.1",
+          "name": "PPE Elective 1",
+          "type": "choice_or_attribute",
+          "courses": [],
+          "attribute_codes": ["APPE", "APPP", "APPC", "APPF"],
+          "cu": 1
+        },
+        {
+          "id": "ppe_electives.2",
+          "name": "PPE Elective 2",
+          "type": "choice_or_attribute",
+          "courses": [],
+          "attribute_codes": ["APPE", "APPP", "APPC", "APPF"],
+          "cu": 1
+        },
+        {
+          "id": "ppe_electives.3",
+          "name": "PPE Elective 3",
+          "type": "choice_or_attribute",
+          "courses": [],
+          "attribute_codes": ["APPE", "APPP", "APPC", "APPF"],
+          "cu": 1
+        },
+        {
+          "id": "ppe_electives.4",
+          "name": "PPE Elective 4",
+          "type": "choice_or_attribute",
+          "courses": [],
+          "attribute_codes": ["APPE", "APPP", "APPC", "APPF"],
+          "cu": 1
+        },
+        {
+          "id": "ppe_electives.5",
+          "name": "PPE Elective 5",
+          "type": "choice_or_attribute",
+          "courses": [],
+          "attribute_codes": ["APPE", "APPP", "APPC", "APPF"],
+          "cu": 1
+        },
+        {
+          "id": "ppe_electives.6",
+          "name": "PPE Elective 6",
+          "type": "choice_or_attribute",
+          "courses": [],
+          "attribute_codes": ["APPE", "APPP", "APPC", "APPF"],
+          "cu": 1
+        },
+        {
+          "id": "ppe_electives.7",
+          "name": "PPE Elective 7",
+          "type": "choice_or_attribute",
+          "courses": [],
+          "attribute_codes": ["APPE", "APPP", "APPC", "APPF"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "sector_reqs",
+      "name": "Sector Requirements",
+      "requirements": [
+        {
+          "id": "sector_reqs.society_1",
+          "name": "Society 1",
+          "type": "attribute_filter",
+          "attribute_codes": ["QS"],
+          "cu": 1
+        },
+        {
+          "id": "sector_reqs.society_2",
+          "name": "Society 2",
+          "type": "attribute_filter",
+          "attribute_codes": ["QS"],
+          "cu": 1
+        },
+        {
+          "id": "sector_reqs.history",
+          "name": "History & Tradition",
+          "type": "attribute_filter",
+          "attribute_codes": ["QT"],
+          "cu": 1
+        },
+        {
+          "id": "sector_reqs.artsletter",
+          "name": "Arts & Letters",
+          "type": "attribute_filter",
+          "attribute_codes": ["QU"],
+          "cu": 1
+        },
+        {
+          "id": "sector_reqs.physical",
+          "name": "Physical World",
+          "type": "attribute_filter",
+          "attribute_codes": ["QP"],
+          "cu": 1
+        },
+        {
+          "id": "sector_reqs.living",
+          "name": "Living World",
+          "type": "attribute_filter",
+          "attribute_codes": ["QG"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "foundational",
+      "name": "Foundational Approaches",
+      "requirements": [
+        {
+          "id": "foundational.writing",
+          "name": "Writing Requirement",
+          "type": "attribute_filter",
+          "attribute_codes": ["AUWR"],
+          "cu": 1
+        },
+        {
+          "id": "foundational.quant",
+          "name": "Quantitative Data Analysis",
+          "type": "attribute_filter",
+          "attribute_codes": ["QM", "AUQD"],
+          "cu": 1
+        },
+        {
+          "id": "foundational.language",
+          "name": "Foreign Language",
+          "type": "attribute_filter",
+          "attribute_codes": ["AULA", "AULG"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "free_electives",
+      "name": "Free Electives",
+      "requirements": [
+        {
+          "id": "free_electives.1",
+          "name": "Free Elective 1",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.2",
+          "name": "Free Elective 2",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.3",
+          "name": "Free Elective 3",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.4",
+          "name": "Free Elective 4",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.5",
+          "name": "Free Elective 5",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.6",
+          "name": "Free Elective 6",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.7",
+          "name": "Free Elective 7",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.8",
+          "name": "Free Elective 8",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.9",
+          "name": "Free Elective 9",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.10",
+          "name": "Free Elective 10",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.11",
+          "name": "Free Elective 11",
+          "type": "any",
+          "cu": 1
+        }
+      ]
+    }
+  ]
+}

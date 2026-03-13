@@ -1,0 +1,243 @@
+{
+  "degree": "Wharton Business Analytics Concentration BS",
+  "program": "WU_BS_BUAN",
+  "total_cu": 37,
+  "categories": [
+    {
+      "id": "wharton_core",
+      "name": "Wharton Core (Business Fundamentals)",
+      "requirements": [
+        {
+          "id": "wharton_core.acct_1010",
+          "name": "ACCT 1010 - Intro Financial Accounting",
+          "type": "specific_course",
+          "courses": ["ACCT-1010"],
+          "cu": 1
+        },
+        {
+          "id": "wharton_core.acct_1020",
+          "name": "ACCT 1020 - Intro Managerial Accounting",
+          "type": "specific_course",
+          "courses": ["ACCT-1020"],
+          "cu": 1
+        },
+        {
+          "id": "wharton_core.bepp_2500",
+          "name": "BEPP 2500 - Managerial Economics",
+          "type": "choice",
+          "courses": ["BEPP-2500", "ECON-0100", "ECON-0110"],
+          "cu": 1
+        },
+        {
+          "id": "wharton_core.fnce_1000",
+          "name": "FNCE 1000 - Corporate Finance",
+          "type": "specific_course",
+          "courses": ["FNCE-1000"],
+          "cu": 1
+        },
+        {
+          "id": "wharton_core.mgmt_1010",
+          "name": "MGMT 1010 - Intro to Management",
+          "type": "specific_course",
+          "courses": ["MGMT-1010"],
+          "cu": 1
+        },
+        {
+          "id": "wharton_core.mktg_1010",
+          "name": "MKTG 1010 - Intro to Marketing",
+          "type": "specific_course",
+          "courses": ["MKTG-1010"],
+          "cu": 1
+        },
+        {
+          "id": "wharton_core.oidd_1010",
+          "name": "OIDD 1010 - Intro to OIDD",
+          "type": "specific_course",
+          "courses": ["OIDD-1010"],
+          "cu": 1
+        },
+        {
+          "id": "wharton_core.stat_1010",
+          "name": "STAT 1010 - Intro to Business Statistics",
+          "type": "specific_course",
+          "courses": ["STAT-1010"],
+          "cu": 1
+        },
+        {
+          "id": "wharton_core.lgst_1010",
+          "name": "LGST 1010 - Intro to Legal Studies",
+          "type": "specific_course",
+          "courses": ["LGST-1010"],
+          "cu": 1
+        },
+        {
+          "id": "wharton_core.bepp_2610",
+          "name": "BEPP 2610 - Macro and Intl Economy",
+          "type": "choice",
+          "courses": ["BEPP-2610", "ECON-0200", "ECON-0210"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "ba_concentration",
+      "name": "Business Analytics Concentration",
+      "description": "4 Business Analytics electives",
+      "requirements": [
+        {
+          "id": "ba_concentration.stat_1020",
+          "name": "STAT 1020 - Applied Data Analysis",
+          "type": "specific_course",
+          "courses": ["STAT-1020"],
+          "cu": 1
+        },
+        {
+          "id": "ba_concentration.oidd_2450",
+          "name": "OIDD 2450 - Analytics & the Digital Economy",
+          "type": "choice",
+          "courses": ["OIDD-2450", "OIDD-2360"],
+          "cu": 1
+        },
+        {
+          "id": "ba_concentration.elective_1",
+          "name": "BA Elective 1",
+          "type": "attribute_filter",
+          "attribute_codes": ["WUCN", "WUBD"],
+          "cu": 1
+        },
+        {
+          "id": "ba_concentration.elective_2",
+          "name": "BA Elective 2",
+          "type": "attribute_filter",
+          "attribute_codes": ["WUCN", "WUBD"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "wharton_electives",
+      "name": "Wharton Unrestricted Electives",
+      "description": "2 Wharton electives from any department",
+      "requirements": [
+        {
+          "id": "wharton_electives.1",
+          "name": "Wharton Elective 1",
+          "type": "attribute_filter",
+          "attribute_codes": ["WUCN", "WUCU"],
+          "cu": 1
+        },
+        {
+          "id": "wharton_electives.2",
+          "name": "Wharton Elective 2",
+          "type": "attribute_filter",
+          "attribute_codes": ["WUCN", "WUCU"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "math_science",
+      "name": "Math & Science",
+      "requirements": [
+        {
+          "id": "math_science.calc",
+          "name": "Calculus",
+          "type": "choice",
+          "courses": ["MATH-1400", "MATH-1300"],
+          "cu": 1
+        },
+        {
+          "id": "math_science.science",
+          "name": "Natural Science",
+          "type": "attribute_filter",
+          "attribute_codes": ["QP", "QG", "EUNS"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "wharton_humanities",
+      "name": "Wharton Humanities & Social Science",
+      "requirements": [
+        {
+          "id": "wharton_humanities.1",
+          "name": "Humanities/SS 1",
+          "type": "attribute_filter",
+          "attribute_codes": ["WUHM", "WUSS"],
+          "cu": 1
+        },
+        {
+          "id": "wharton_humanities.2",
+          "name": "Humanities/SS 2",
+          "type": "attribute_filter",
+          "attribute_codes": ["WUHM", "WUSS"],
+          "cu": 1
+        },
+        {
+          "id": "wharton_humanities.3",
+          "name": "Humanities/SS 3",
+          "type": "attribute_filter",
+          "attribute_codes": ["WUHM", "WUSS"],
+          "cu": 1
+        },
+        {
+          "id": "wharton_humanities.4",
+          "name": "Humanities/SS 4",
+          "type": "attribute_filter",
+          "attribute_codes": ["WUHM", "WUSS"],
+          "cu": 1
+        },
+        {
+          "id": "wharton_humanities.5",
+          "name": "Humanities/SS 5",
+          "type": "attribute_filter",
+          "attribute_codes": ["WUHM", "WUSS"],
+          "cu": 1
+        },
+        {
+          "id": "wharton_humanities.6",
+          "name": "Humanities/SS 6",
+          "type": "attribute_filter",
+          "attribute_codes": ["WUHM", "WUSS"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "free_electives",
+      "name": "Free Electives",
+      "requirements": [
+        {
+          "id": "free_electives.1",
+          "name": "Free Elective 1",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.2",
+          "name": "Free Elective 2",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.3",
+          "name": "Free Elective 3",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.4",
+          "name": "Free Elective 4",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.5",
+          "name": "Free Elective 5",
+          "type": "any",
+          "cu": 1
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,256 @@
+{
+  "degree": "CAS Biology BA",
+  "program": "AU_BA_BIOL",
+  "total_cu": 37,
+  "categories": [
+    {
+      "id": "bio_core",
+      "name": "Biology Core",
+      "requirements": [
+        {
+          "id": "bio_core.biol_1101",
+          "name": "BIOL 1101 - Intro Biology I",
+          "type": "specific_course",
+          "courses": ["BIOL-1101"],
+          "cu": 1
+        },
+        {
+          "id": "bio_core.biol_1102",
+          "name": "BIOL 1102 - Intro Biology II",
+          "type": "specific_course",
+          "courses": ["BIOL-1102"],
+          "cu": 1
+        },
+        {
+          "id": "bio_core.biol_2010",
+          "name": "BIOL 2010 - Cell Biology",
+          "type": "choice",
+          "courses": ["BIOL-2010", "BIOL-2210"],
+          "cu": 1
+        },
+        {
+          "id": "bio_core.biol_2310",
+          "name": "BIOL 2310 - Genetics",
+          "type": "specific_course",
+          "courses": ["BIOL-2310"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "bio_electives",
+      "name": "Biology Electives",
+      "description": "4 upper-level biology electives",
+      "requirements": [
+        {
+          "id": "bio_electives.1",
+          "name": "Biology Elective 1",
+          "type": "attribute_filter",
+          "attribute_codes": ["QG", "QP"],
+          "dept_filter": ["BIOL", "BIOE"],
+          "cu": 1
+        },
+        {
+          "id": "bio_electives.2",
+          "name": "Biology Elective 2",
+          "type": "attribute_filter",
+          "attribute_codes": ["QG", "QP"],
+          "dept_filter": ["BIOL", "BIOE"],
+          "cu": 1
+        },
+        {
+          "id": "bio_electives.3",
+          "name": "Biology Elective 3",
+          "type": "attribute_filter",
+          "attribute_codes": ["QG", "QP"],
+          "dept_filter": ["BIOL", "BIOE"],
+          "cu": 1
+        },
+        {
+          "id": "bio_electives.4",
+          "name": "Biology Elective 4",
+          "type": "attribute_filter",
+          "attribute_codes": ["QG", "QP"],
+          "dept_filter": ["BIOL", "BIOE"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "chem",
+      "name": "Chemistry Requirement",
+      "requirements": [
+        {
+          "id": "chem.chem_1011",
+          "name": "CHEM 1011 - General Chemistry I",
+          "type": "choice",
+          "courses": ["CHEM-1011", "CHEM-1012", "CHEM-1101"],
+          "cu": 1
+        },
+        {
+          "id": "chem.chem_1012",
+          "name": "CHEM 1012 - General Chemistry II",
+          "type": "choice",
+          "courses": ["CHEM-1012", "CHEM-1102"],
+          "cu": 1
+        },
+        {
+          "id": "chem.orgo",
+          "name": "Organic Chemistry",
+          "type": "choice",
+          "courses": ["CHEM-2411", "CHEM-2412", "CHEM-2010", "CHEM-2020"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "physics",
+      "name": "Physics",
+      "requirements": [
+        {
+          "id": "physics.phys_1",
+          "name": "Physics I",
+          "type": "choice",
+          "courses": ["PHYS-0140", "PHYS-0150", "PHYS-0170"],
+          "cu": 1
+        },
+        {
+          "id": "physics.phys_2",
+          "name": "Physics II",
+          "type": "choice",
+          "courses": ["PHYS-0141", "PHYS-0151", "PHYS-0171"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "math",
+      "name": "Mathematics",
+      "requirements": [
+        {
+          "id": "math.calc_1",
+          "name": "Calculus I",
+          "type": "choice",
+          "courses": ["MATH-1400", "MATH-1300"],
+          "cu": 1
+        },
+        {
+          "id": "math.calc_2",
+          "name": "Calculus II",
+          "type": "choice",
+          "courses": ["MATH-1410", "MATH-1610"],
+          "cu": 1
+        },
+        {
+          "id": "math.stat",
+          "name": "Statistics",
+          "type": "choice",
+          "courses": ["STAT-1010", "STAT-1020", "STAT-4300", "BIOL-2220"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "sector_reqs",
+      "name": "Sector Requirements",
+      "requirements": [
+        {
+          "id": "sector_reqs.society_1",
+          "name": "Society 1",
+          "type": "attribute_filter",
+          "attribute_codes": ["QS"],
+          "cu": 1
+        },
+        {
+          "id": "sector_reqs.society_2",
+          "name": "Society 2",
+          "type": "attribute_filter",
+          "attribute_codes": ["QS"],
+          "cu": 1
+        },
+        {
+          "id": "sector_reqs.history",
+          "name": "History & Tradition",
+          "type": "attribute_filter",
+          "attribute_codes": ["QT"],
+          "cu": 1
+        },
+        {
+          "id": "sector_reqs.artsletter",
+          "name": "Arts & Letters",
+          "type": "attribute_filter",
+          "attribute_codes": ["QU"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "foundational",
+      "name": "Foundational Approaches",
+      "requirements": [
+        {
+          "id": "foundational.writing",
+          "name": "Writing Requirement",
+          "type": "attribute_filter",
+          "attribute_codes": ["AUWR"],
+          "cu": 1
+        },
+        {
+          "id": "foundational.language",
+          "name": "Foreign Language",
+          "type": "attribute_filter",
+          "attribute_codes": ["AULA", "AULG"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "free_electives",
+      "name": "Free Electives",
+      "requirements": [
+        {
+          "id": "free_electives.1",
+          "name": "Free Elective 1",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.2",
+          "name": "Free Elective 2",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.3",
+          "name": "Free Elective 3",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.4",
+          "name": "Free Elective 4",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.5",
+          "name": "Free Elective 5",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.6",
+          "name": "Free Elective 6",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.7",
+          "name": "Free Elective 7",
+          "type": "any",
+          "cu": 1
+        }
+      ]
+    }
+  ]
+}

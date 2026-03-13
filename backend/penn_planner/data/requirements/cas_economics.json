@@ -1,0 +1,297 @@
+{
+  "degree": "CAS Economics BA",
+  "program": "AU_BA_ECON",
+  "total_cu": 37,
+  "categories": [
+    {
+      "id": "econ_core",
+      "name": "Economics Core",
+      "requirements": [
+        {
+          "id": "econ_core.econ_0100",
+          "name": "ECON 0100 - Intro Micro",
+          "type": "specific_course",
+          "courses": ["ECON-0100"],
+          "cu": 1
+        },
+        {
+          "id": "econ_core.econ_0200",
+          "name": "ECON 0200 - Intro Macro",
+          "type": "specific_course",
+          "courses": ["ECON-0200"],
+          "cu": 1
+        },
+        {
+          "id": "econ_core.econ_1010",
+          "name": "ECON 1010 - Intermediate Micro",
+          "type": "specific_course",
+          "courses": ["ECON-1010"],
+          "cu": 1
+        },
+        {
+          "id": "econ_core.econ_1020",
+          "name": "ECON 1020 - Intermediate Macro",
+          "type": "specific_course",
+          "courses": ["ECON-1020"],
+          "cu": 1
+        },
+        {
+          "id": "econ_core.econ_1030",
+          "name": "ECON 1030 - Statistics for Economists",
+          "type": "choice",
+          "courses": ["ECON-1030", "ECON-1040"],
+          "cu": 1
+        },
+        {
+          "id": "econ_core.econ_1040",
+          "name": "ECON 1040 - Econometrics",
+          "type": "specific_course",
+          "courses": ["ECON-1040"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "econ_electives",
+      "name": "Economics Electives",
+      "description": "4 upper-level ECON electives (2000+)",
+      "requirements": [
+        {
+          "id": "econ_electives.1",
+          "name": "Econ Elective 1",
+          "type": "attribute_filter",
+          "attribute_codes": ["ACGE"],
+          "dept_filter": ["ECON"],
+          "cu": 1
+        },
+        {
+          "id": "econ_electives.2",
+          "name": "Econ Elective 2",
+          "type": "attribute_filter",
+          "attribute_codes": ["ACGE"],
+          "dept_filter": ["ECON"],
+          "cu": 1
+        },
+        {
+          "id": "econ_electives.3",
+          "name": "Econ Elective 3",
+          "type": "attribute_filter",
+          "attribute_codes": ["ACGE"],
+          "dept_filter": ["ECON"],
+          "cu": 1
+        },
+        {
+          "id": "econ_electives.4",
+          "name": "Econ Elective 4",
+          "type": "attribute_filter",
+          "attribute_codes": ["ACGE"],
+          "dept_filter": ["ECON"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "math",
+      "name": "Mathematics Requirement",
+      "requirements": [
+        {
+          "id": "math.calc",
+          "name": "Calculus (MATH 1400 or equivalent)",
+          "type": "choice",
+          "courses": ["MATH-1400", "MATH-1300"],
+          "cu": 1
+        },
+        {
+          "id": "math.math_elective",
+          "name": "Math Elective",
+          "type": "choice",
+          "courses": ["MATH-1410", "MATH-1610", "MATH-2400", "MATH-2600", "STAT-4300", "STAT-1010", "STAT-1020"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "sector_society",
+      "name": "Sector: Society",
+      "requirements": [
+        {
+          "id": "sector_society.1",
+          "name": "Society Course 1",
+          "type": "attribute_filter",
+          "attribute_codes": ["QS"],
+          "cu": 1
+        },
+        {
+          "id": "sector_society.2",
+          "name": "Society Course 2",
+          "type": "attribute_filter",
+          "attribute_codes": ["QS"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "sector_history",
+      "name": "Sector: History & Tradition",
+      "requirements": [
+        {
+          "id": "sector_history.1",
+          "name": "History & Tradition 1",
+          "type": "attribute_filter",
+          "attribute_codes": ["QT"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "sector_artsletter",
+      "name": "Sector: Arts & Letters",
+      "requirements": [
+        {
+          "id": "sector_artsletter.1",
+          "name": "Arts & Letters 1",
+          "type": "attribute_filter",
+          "attribute_codes": ["QU"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "sector_physical",
+      "name": "Sector: Physical World",
+      "requirements": [
+        {
+          "id": "sector_physical.1",
+          "name": "Physical World 1",
+          "type": "attribute_filter",
+          "attribute_codes": ["QP"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "sector_living",
+      "name": "Sector: Living World",
+      "requirements": [
+        {
+          "id": "sector_living.1",
+          "name": "Living World 1",
+          "type": "attribute_filter",
+          "attribute_codes": ["QG"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "foundational",
+      "name": "Foundational Approaches",
+      "requirements": [
+        {
+          "id": "foundational.writing",
+          "name": "Writing Requirement",
+          "type": "attribute_filter",
+          "attribute_codes": ["AUWR"],
+          "cu": 1
+        },
+        {
+          "id": "foundational.quant",
+          "name": "Quantitative Data Analysis",
+          "type": "attribute_filter",
+          "attribute_codes": ["QM", "AUQD"],
+          "cu": 1
+        },
+        {
+          "id": "foundational.language",
+          "name": "Foreign Language",
+          "type": "attribute_filter",
+          "attribute_codes": ["AULA", "AULG"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "free_electives",
+      "name": "Free Electives",
+      "requirements": [
+        {
+          "id": "free_electives.1",
+          "name": "Free Elective 1",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.2",
+          "name": "Free Elective 2",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.3",
+          "name": "Free Elective 3",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.4",
+          "name": "Free Elective 4",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.5",
+          "name": "Free Elective 5",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.6",
+          "name": "Free Elective 6",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.7",
+          "name": "Free Elective 7",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.8",
+          "name": "Free Elective 8",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.9",
+          "name": "Free Elective 9",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.10",
+          "name": "Free Elective 10",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.11",
+          "name": "Free Elective 11",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.12",
+          "name": "Free Elective 12",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.13",
+          "name": "Free Elective 13",
+          "type": "any",
+          "cu": 1
+        }
+      ]
+    }
+  ]
+}

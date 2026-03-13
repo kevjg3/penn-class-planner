@@ -1,0 +1,250 @@
+{
+  "degree": "CAS Mathematics BA",
+  "program": "AU_BA_MATH",
+  "total_cu": 37,
+  "categories": [
+    {
+      "id": "math_core",
+      "name": "Mathematics Core",
+      "requirements": [
+        {
+          "id": "math_core.calc_1",
+          "name": "MATH 1400 - Calculus I",
+          "type": "specific_course",
+          "courses": ["MATH-1400"],
+          "cu": 1
+        },
+        {
+          "id": "math_core.calc_2",
+          "name": "MATH 1410/1610 - Calculus II",
+          "type": "choice",
+          "courses": ["MATH-1410", "MATH-1610"],
+          "cu": 1
+        },
+        {
+          "id": "math_core.calc_3",
+          "name": "MATH 2400 - Multivariable Calculus",
+          "type": "choice",
+          "courses": ["MATH-2400", "MATH-2600"],
+          "cu": 1
+        },
+        {
+          "id": "math_core.linear",
+          "name": "MATH 3120/3130 - Linear Algebra",
+          "type": "choice",
+          "courses": ["MATH-3120", "MATH-3130", "MATH-2410", "MATH-3140"],
+          "cu": 1
+        },
+        {
+          "id": "math_core.analysis_1",
+          "name": "MATH 3600 - Advanced Calculus / Analysis",
+          "type": "choice",
+          "courses": ["MATH-3600", "MATH-3610"],
+          "cu": 1
+        },
+        {
+          "id": "math_core.analysis_2",
+          "name": "MATH 3610 - Advanced Calculus II",
+          "type": "choice",
+          "courses": ["MATH-3610", "MATH-5080"],
+          "cu": 1
+        },
+        {
+          "id": "math_core.algebra",
+          "name": "MATH 3700 - Algebra",
+          "type": "choice",
+          "courses": ["MATH-3700", "MATH-3710"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "math_electives",
+      "name": "Math Electives",
+      "description": "5 upper-level math electives",
+      "requirements": [
+        {
+          "id": "math_electives.1",
+          "name": "Math Elective 1",
+          "type": "attribute_filter",
+          "attribute_codes": ["EUMA", "AUNM"],
+          "dept_filter": ["MATH", "AMCS"],
+          "cu": 1
+        },
+        {
+          "id": "math_electives.2",
+          "name": "Math Elective 2",
+          "type": "attribute_filter",
+          "attribute_codes": ["EUMA", "AUNM"],
+          "dept_filter": ["MATH", "AMCS"],
+          "cu": 1
+        },
+        {
+          "id": "math_electives.3",
+          "name": "Math Elective 3",
+          "type": "attribute_filter",
+          "attribute_codes": ["EUMA", "AUNM"],
+          "dept_filter": ["MATH", "AMCS"],
+          "cu": 1
+        },
+        {
+          "id": "math_electives.4",
+          "name": "Math Elective 4",
+          "type": "attribute_filter",
+          "attribute_codes": ["EUMA", "AUNM"],
+          "dept_filter": ["MATH", "AMCS"],
+          "cu": 1
+        },
+        {
+          "id": "math_electives.5",
+          "name": "Math Elective 5",
+          "type": "attribute_filter",
+          "attribute_codes": ["EUMA", "AUNM"],
+          "dept_filter": ["MATH", "AMCS"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "sector_reqs",
+      "name": "Sector Requirements",
+      "requirements": [
+        {
+          "id": "sector_reqs.society_1",
+          "name": "Society 1",
+          "type": "attribute_filter",
+          "attribute_codes": ["QS"],
+          "cu": 1
+        },
+        {
+          "id": "sector_reqs.society_2",
+          "name": "Society 2",
+          "type": "attribute_filter",
+          "attribute_codes": ["QS"],
+          "cu": 1
+        },
+        {
+          "id": "sector_reqs.history",
+          "name": "History & Tradition",
+          "type": "attribute_filter",
+          "attribute_codes": ["QT"],
+          "cu": 1
+        },
+        {
+          "id": "sector_reqs.artsletter",
+          "name": "Arts & Letters",
+          "type": "attribute_filter",
+          "attribute_codes": ["QU"],
+          "cu": 1
+        },
+        {
+          "id": "sector_reqs.physical",
+          "name": "Physical World",
+          "type": "attribute_filter",
+          "attribute_codes": ["QP"],
+          "cu": 1
+        },
+        {
+          "id": "sector_reqs.living",
+          "name": "Living World",
+          "type": "attribute_filter",
+          "attribute_codes": ["QG"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "foundational",
+      "name": "Foundational Approaches",
+      "requirements": [
+        {
+          "id": "foundational.writing",
+          "name": "Writing Requirement",
+          "type": "attribute_filter",
+          "attribute_codes": ["AUWR"],
+          "cu": 1
+        },
+        {
+          "id": "foundational.quant",
+          "name": "Quantitative Data Analysis",
+          "type": "attribute_filter",
+          "attribute_codes": ["QM", "AUQD"],
+          "cu": 1
+        },
+        {
+          "id": "foundational.language",
+          "name": "Foreign Language",
+          "type": "attribute_filter",
+          "attribute_codes": ["AULA", "AULG"],
+          "cu": 1
+        }
+      ]
+    },
+    {
+      "id": "free_electives",
+      "name": "Free Electives",
+      "requirements": [
+        {
+          "id": "free_electives.1",
+          "name": "Free Elective 1",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.2",
+          "name": "Free Elective 2",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.3",
+          "name": "Free Elective 3",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.4",
+          "name": "Free Elective 4",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.5",
+          "name": "Free Elective 5",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.6",
+          "name": "Free Elective 6",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.7",
+          "name": "Free Elective 7",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.8",
+          "name": "Free Elective 8",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.9",
+          "name": "Free Elective 9",
+          "type": "any",
+          "cu": 1
+        },
+        {
+          "id": "free_electives.10",
+          "name": "Free Elective 10",
+          "type": "any",
+          "cu": 1
+        }
+      ]
+    }
+  ]
+}
