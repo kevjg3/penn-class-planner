@@ -18,3 +18,11 @@ export function useCourseDetail(id: string, enabled = true) {
     enabled: !!id && enabled,
   });
 }
+
+export function useCourseSections(courseId: string, enabled = true) {
+  return useQuery({
+    queryKey: ["course-sections", courseId],
+    queryFn: () => api.getCourseSections(courseId),
+    enabled: !!courseId && enabled,
+  });
+}

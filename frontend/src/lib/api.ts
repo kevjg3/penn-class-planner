@@ -86,6 +86,12 @@ export const api = {
       `/requirements/generate-plan${params ? "?" + new URLSearchParams(params) : ""}`
     ),
 
+  // Sections (for schedule builder)
+  getCourseSections: (id: string) =>
+    fetchJSON<import("./types").CourseSections>(
+      `/courses/${encodeURIComponent(id)}/sections`
+    ),
+
   // Recommendations
   getRecommendations: (params?: Record<string, string>) =>
     fetchJSON<import("./types").Recommendation[]>(

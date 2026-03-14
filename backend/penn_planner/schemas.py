@@ -136,3 +136,40 @@ class GeneratedPlan(BaseModel):
     filled_slots: int
     already_completed: int
     slots: list[PlanSlot]
+
+
+# --- Schedule / Section schemas ---
+
+class MeetingSchema(BaseModel):
+    day: str
+    start: float
+    end: float
+    room: str | None = None
+
+
+class InstructorSchema(BaseModel):
+    id: int | None = None
+    name: str = ""
+
+
+class SectionSchema(BaseModel):
+    id: str
+    status: str = ""
+    activity: str = ""
+    credits: float = 1.0
+    capacity: int = 0
+    semester: str = ""
+    meetings: list[MeetingSchema] = []
+    instructors: list[InstructorSchema] = []
+    course_quality: float | None = None
+    instructor_quality: float | None = None
+    difficulty: float | None = None
+    associated_sections: list[str] = []
+    registration_volume: int | None = None
+
+
+class CourseSectionsSchema(BaseModel):
+    course_id: str
+    title: str
+    credits: float
+    sections: list[SectionSchema] = []

@@ -123,3 +123,53 @@ export interface GeneratedPlan {
   already_completed: number;
   slots: PlanSlot[];
 }
+
+// --- Schedule / Sections ---
+
+export interface Meeting {
+  day: string;
+  start: number;
+  end: number;
+  room: string | null;
+}
+
+export interface Instructor {
+  id: number | null;
+  name: string;
+}
+
+export interface Section {
+  id: string;
+  status: string;
+  activity: string;
+  credits: number;
+  capacity: number;
+  semester: string;
+  meetings: Meeting[];
+  instructors: Instructor[];
+  course_quality: number | null;
+  instructor_quality: number | null;
+  difficulty: number | null;
+  associated_sections: string[];
+  registration_volume: number | null;
+}
+
+export interface CourseSections {
+  course_id: string;
+  title: string;
+  credits: number;
+  sections: Section[];
+}
+
+export interface ScheduledSection {
+  courseId: string;
+  courseTitle: string;
+  sectionId: string;
+  credits: number;
+  meetings: Meeting[];
+  color: string;
+  courseQuality: number | null;
+  difficulty: number | null;
+  instructors: string[];
+  activity: string;
+}

@@ -7,7 +7,7 @@ from sqlalchemy.orm import selectinload
 
 from penn_planner.db import get_session
 from penn_planner.models import Course, CourseAttribute
-from penn_planner.schemas import CourseDetailSchema, CourseListSchema, AttributeSchema
+from penn_planner.schemas import CourseDetailSchema, CourseListSchema, AttributeSchema, CourseSectionsSchema
 from penn_planner.services.pcr_client import PCRClient
 
 router = APIRouter(prefix="/courses", tags=["courses"])
@@ -156,6 +156,26 @@ async def get_course(
             for a in course.attributes
         ],
         crosslistings=json.loads(course.crosslistings_json or "[]"),
+    )
+
+
+@router.get("/{course_id}/sections", response_model=CourseSectionsSchema)
+async def get_course_sections(
+    course_id: str,
+    session: AsyncSession = Depends(get_session),
+):
+    """Get all sections for a course with meeting times, instructors, etc."""
+    course = await session.get(Course, course_id)
+    if not course:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail=f"Course {course_id} not found")
+
+    sections = json.loads(course.sections_json or "[]")
+    return CourseSectionsSchema(
+        course_id=course.id,
+        title=course.title,
+        credits=course.credits,
+        sections=sections,
     )
 
 
