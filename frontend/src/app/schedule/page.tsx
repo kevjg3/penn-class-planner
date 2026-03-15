@@ -70,6 +70,8 @@ export default function SchedulePage() {
   const [query, setQuery] = useState("");
   const [department, setDepartment] = useState("");
   const [expandedCourse, setExpandedCourse] = useState<string | null>(null);
+  const [attribute, setAttribute] = useState("");
+  const [maxDifficulty, setMaxDifficulty] = useState("");
   const [hydrated, setHydrated] = useState(false);
 
   // Load from localStorage on mount
@@ -92,10 +94,16 @@ export default function SchedulePage() {
     queryKey: ["departments"],
     queryFn: api.getDepartments,
   });
+  const { data: allAttributes } = useQuery({
+    queryKey: ["attributes"],
+    queryFn: api.getAttributes,
+  });
 
   const searchParams: Record<string, string> = {};
   if (query) searchParams.q = query;
   if (department) searchParams.department = department;
+  if (attribute) searchParams.attributes = attribute;
+  if (maxDifficulty) searchParams.max_difficulty = maxDifficulty;
   const hasSearch = Object.keys(searchParams).length > 0;
   const { data: courses, isLoading: searchLoading } = useSearchCourses(searchParams, hasSearch);
 
@@ -241,14 +249,38 @@ export default function SchedulePage() {
                 className="w-full border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-400"
               />
             </div>
+            <div className="grid grid-cols-2 gap-2 mb-2">
+              <select
+                value={department}
+                onChange={(e) => setDepartment(e.target.value)}
+                className="w-full border border-slate-200 rounded-xl px-2.5 py-2 text-xs text-slate-900 bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+              >
+                <option value="">All Depts</option>
+                {departments?.map((d) => (
+                  <option key={d.code} value={d.code}>{d.code} ({d.count})</option>
+                ))}
+              </select>
+              <input
+                type="number"
+                step="0.5"
+                min="0"
+                max="4"
+                value={maxDifficulty}
+                onChange={(e) => setMaxDifficulty(e.target.value)}
+                placeholder="Max Diff"
+                className="w-full border border-slate-200 rounded-xl px-2.5 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+              />
+            </div>
             <select
-              value={department}
-              onChange={(e) => setDepartment(e.target.value)}
-              className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+              value={attribute}
+              onChange={(e) => setAttribute(e.target.value)}
+              className="w-full border border-slate-200 rounded-xl px-2.5 py-2 text-xs text-slate-900 bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/40"
             >
-              <option value="">All Departments</option>
-              {departments?.map((d) => (
-                <option key={d.code} value={d.code}>{d.code} ({d.count})</option>
+              <option value="">All Attributes</option>
+              {allAttributes?.map((a) => (
+                <option key={a.code} value={a.code}>
+                  {a.code} — {a.description} ({a.count})
+                </option>
               ))}
             </select>
           </div>
