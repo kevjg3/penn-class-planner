@@ -43,7 +43,8 @@ SEED_DEPARTMENTS = [
     # CAS - Arts
     "ARTH", "FNAR", "MUSC", "THAR", "CINE", "DSGN", "VLST",
     # CAS - Other
-    "COMM", "PPE", "STSC", "URBS", "HSOC", "NEUR",
+    "COMM", "PPE", "STSC", "URBS", "HSOC", "NEUR", "NRSC", "COGS",
+    "DATA", "LGIC", "HUNG",
     # Wharton
     "ACCT", "BEPP", "FNCE", "LGST", "MGMT", "MKTG", "OIDD",
     "REAL", "STAT", "HCMG", "WH",
