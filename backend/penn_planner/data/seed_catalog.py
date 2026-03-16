@@ -23,9 +23,9 @@ from penn_planner.models import Course, CourseAttribute
 from penn_planner.services.pcr_client import PCRClient
 
 
-# Semesters to search across: one Spring + one Fall covers nearly all courses
+# Semesters to search across: Spring + Fall 2025, plus Fall 2026 for upcoming offerings
 # A = Spring, C = Fall
-SEED_SEMESTERS = ["2025A", "2025C"]
+SEED_SEMESTERS = ["2025A", "2025C", "2026C"]
 
 # Comprehensive list of departments across all Penn schools
 SEED_DEPARTMENTS = [

@@ -65,6 +65,115 @@ function getConflicts(sections: ScheduledSection[]): Set<string> {
   return conflicts;
 }
 
+// Represents a single block on the calendar
+interface CalendarBlock {
+  sectionId: string;
+  courseId: string;
+  section: ScheduledSection;
+  meeting: Meeting;
+  meetingIndex: number;
+  day: string;
+  start: number;
+  end: number;
+}
+
+// Compute side-by-side layout for overlapping blocks
+function computeBlockLayout(sections: ScheduledSection[]): Map<string, { col: number; totalCols: number }> {
+  // Build flat list of all blocks
+  const blocks: CalendarBlock[] = [];
+  for (const section of sections) {
+    section.meetings.forEach((meeting, mi) => {
+      blocks.push({
+        sectionId: section.sectionId,
+        courseId: section.courseId,
+        section,
+        meeting,
+        meetingIndex: mi,
+        day: meeting.day,
+        start: meeting.start,
+        end: meeting.end,
+      });
+    });
+  }
+
+  // Group by day
+  const byDay: Record<string, CalendarBlock[]> = {};
+  for (const block of blocks) {
+    if (!byDay[block.day]) byDay[block.day] = [];
+    byDay[block.day].push(block);
+  }
+
+  const layout = new Map<string, { col: number; totalCols: number }>();
+
+  for (const day of Object.keys(byDay)) {
+    const dayBlocks = byDay[day].sort((a, b) => a.start - b.start || a.end - b.end);
+
+    // Find overlap clusters using a sweep
+    const clusters: CalendarBlock[][] = [];
+    for (const block of dayBlocks) {
+      // Try to add to an existing cluster that overlaps
+      let placed = false;
+      for (const cluster of clusters) {
+        if (cluster.some((b) => b.start < block.end && block.start < b.end)) {
+          cluster.push(block);
+          placed = true;
+          break;
+        }
+      }
+      if (!placed) {
+        clusters.push([block]);
+      }
+    }
+
+    // Merge clusters that transitively overlap
+    let merged = true;
+    while (merged) {
+      merged = false;
+      for (let i = 0; i < clusters.length; i++) {
+        for (let j = i + 1; j < clusters.length; j++) {
+          const overlaps = clusters[i].some((a) =>
+            clusters[j].some((b) => a.start < b.end && b.start < a.end)
+          );
+          if (overlaps) {
+            clusters[i].push(...clusters[j]);
+            clusters.splice(j, 1);
+            merged = true;
+            break;
+          }
+        }
+        if (merged) break;
+      }
+    }
+
+    // For each cluster, assign columns greedily
+    for (const cluster of clusters) {
+      cluster.sort((a, b) => a.start - b.start || a.end - b.end);
+      const colAssignments: { block: CalendarBlock; col: number }[] = [];
+
+      for (const block of cluster) {
+        // Find first available column (no overlap with existing blocks in that column)
+        let col = 0;
+        while (true) {
+          const conflict = colAssignments.some(
+            (ca) => ca.col === col && ca.block.start < block.end && block.start < ca.block.end
+          );
+          if (!conflict) break;
+          col++;
+        }
+        colAssignments.push({ block, col });
+      }
+
+      const totalCols = Math.max(...colAssignments.map((ca) => ca.col)) + 1;
+      for (const ca of colAssignments) {
+        const key = `${ca.block.sectionId}-${ca.block.meetingIndex}`;
+        layout.set(key, { col: ca.col, totalCols });
+      }
+    }
+  }
+
+  return layout;
+}
+
 export default function SchedulePage() {
   const [scheduled, setScheduled] = useState<ScheduledSection[]>([]);
   const [query, setQuery] = useState("");
@@ -168,6 +277,7 @@ export default function SchedulePage() {
   const conflicts = getConflicts(scheduled);
   const conflictCount = conflicts.size;
 
+  const blockLayout = computeBlockLayout(scheduled);
   const scheduledSectionIds = new Set(scheduled.map((s) => s.sectionId));
   const scheduledCourseIds = new Set(scheduled.map((s) => s.courseId));
 
@@ -519,9 +629,16 @@ export default function SchedulePage() {
                   const height = (meeting.end - meeting.start) * HOUR_HEIGHT;
                   const isConflicting = conflicts.has(section.sectionId);
 
-                  // Calculate left and width relative to the grid area (after the 56px gutter)
-                  const left = `calc(56px + ${dayIndex} * (100% - 56px) / 5 + 2px)`;
-                  const width = `calc((100% - 56px) / 5 - 4px)`;
+                  // Get layout info for side-by-side display
+                  const layoutKey = `${section.sectionId}-${mi}`;
+                  const layoutInfo = blockLayout.get(layoutKey) || { col: 0, totalCols: 1 };
+                  const { col, totalCols } = layoutInfo;
+
+                  // Calculate left and width, subdividing column for overlapping blocks
+                  const colWidth = `(100% - 56px) / 5`;
+                  const slotWidth = `(${colWidth} - 4px) / ${totalCols}`;
+                  const left = `calc(56px + ${dayIndex} * ${colWidth} + 2px + ${col} * ${slotWidth})`;
+                  const width = `calc(${slotWidth})`;
 
                   return (
                     <div
@@ -535,6 +652,7 @@ export default function SchedulePage() {
                         left,
                         width,
                         backgroundColor: section.color,
+                        zIndex: isConflicting ? 10 : 5,
                       }}
                       title={`${section.courseId} — ${section.sectionId}\n${section.courseTitle}\n${formatMeetingTimes([meeting])}\n${meeting.room || ""}`}
                       onClick={() => removeSection(section.sectionId)}
