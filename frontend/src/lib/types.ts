@@ -150,7 +150,7 @@ export interface Section {
   course_quality: number | null;
   instructor_quality: number | null;
   difficulty: number | null;
-  associated_sections: string[];
+  associated_sections: { id: string; activity: string }[];
   registration_volume: number | null;
 }
 

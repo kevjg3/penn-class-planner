@@ -152,6 +152,11 @@ class InstructorSchema(BaseModel):
     name: str = ""
 
 
+class AssociatedSectionSchema(BaseModel):
+    id: str
+    activity: str = ""
+
+
 class SectionSchema(BaseModel):
     id: str
     status: str = ""
@@ -164,7 +169,7 @@ class SectionSchema(BaseModel):
     course_quality: float | None = None
     instructor_quality: float | None = None
     difficulty: float | None = None
-    associated_sections: list[str] = []
+    associated_sections: list[AssociatedSectionSchema] = []
     registration_volume: int | None = None
 
 

@@ -6,7 +6,7 @@ import { useSearchCourses, useCourseSections } from "@/hooks/useCourses";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { RatingBadge } from "@/components/shared/RatingBadge";
 import { api } from "@/lib/api";
-import type { ScheduledSection, Meeting } from "@/lib/types";
+import type { ScheduledSection, Meeting, Section } from "@/lib/types";
 
 const COURSE_COLORS = [
   "#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6",
@@ -442,79 +442,152 @@ export default function SchedulePage() {
                       {sectionData && sectionData.sections.length === 0 && (
                         <p className="text-xs text-slate-400 py-2">No sections available</p>
                       )}
-                      {sectionData?.sections.map((section) => {
-                        const isAdded = scheduledSectionIds.has(section.id);
-                        const wouldConflict = !isAdded && scheduled.some((s) =>
-                          s.meetings.some((sm) =>
-                            section.meetings.some((nm) => hasConflict(sm, nm))
-                          )
+                      {sectionData && (() => {
+                        const sections = sectionData.sections;
+                        // Group sections by activity type
+                        const activityGroups: Record<string, Section[]> = {};
+                        for (const s of sections) {
+                          const act = s.activity || "Other";
+                          if (!activityGroups[act]) activityGroups[act] = [];
+                          activityGroups[act].push(s);
+                        }
+                        // Determine which activity types exist
+                        const activityTypes = Object.keys(activityGroups);
+                        const hasMultipleTypes = activityTypes.length > 1;
+                        // Check which activities are required (referenced as associated_sections)
+                        const requiredActivities = new Set<string>();
+                        for (const s of sections) {
+                          for (const assoc of s.associated_sections) {
+                            const assocSection = sections.find((x) => x.id === assoc.id);
+                            if (assocSection) requiredActivities.add(assocSection.activity);
+                          }
+                        }
+                        // Order: LEC first, then REC, LAB, others
+                        const activityOrder = ["LEC", "REC", "LAB", "SEM", "IND", "CLN", "STU"];
+                        const sortedTypes = activityTypes.sort((a, b) => {
+                          const ai = activityOrder.indexOf(a);
+                          const bi = activityOrder.indexOf(b);
+                          return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+                        });
+
+                        // Check if a required associated section type is missing from schedule
+                        const scheduledActivitiesForCourse = new Set(
+                          scheduled.filter((s) => s.courseId === course.id).map((s) => s.activity)
                         );
-                        return (
-                          <div
-                            key={section.id}
-                            className={`rounded-lg p-2.5 text-xs border transition-all ${
-                              isAdded
-                                ? "bg-emerald-50 border-emerald-200"
-                                : wouldConflict
-                                ? "bg-red-50/50 border-red-200/60"
-                                : "bg-white border-slate-200 hover:border-blue-200"
-                            }`}
-                          >
-                            <div className="flex items-center justify-between mb-1">
-                              <div className="flex items-center gap-1.5">
-                                <span className="font-mono font-bold text-slate-800">
-                                  {section.id.split("-").pop()}
+
+                        return sortedTypes.map((actType) => (
+                          <div key={actType}>
+                            {hasMultipleTypes && (
+                              <div className="flex items-center gap-1.5 mt-1 mb-1">
+                                <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+                                  {actType === "LEC" ? "Lectures" : actType === "REC" ? "Recitations" : actType === "LAB" ? "Labs" : actType === "SEM" ? "Seminars" : actType}
                                 </span>
-                                <span className="text-slate-400">{section.activity}</span>
-                                {section.status === "C" && (
-                                  <span className="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-medium">Closed</span>
+                                {requiredActivities.has(actType) && (
+                                  <span className="text-[9px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded font-medium">Required</span>
                                 )}
-                                {section.status === "O" && (
-                                  <span className="text-[10px] bg-emerald-100 text-emerald-600 px-1.5 py-0.5 rounded font-medium">Open</span>
+                                {!requiredActivities.has(actType) && actType !== "LEC" && actType !== "SEM" && activityTypes.includes("LEC") && (
+                                  <span className="text-[9px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded font-medium">Optional</span>
                                 )}
                               </div>
-                              {isAdded ? (
-                                <button
-                                  onClick={() => removeSection(section.id)}
-                                  className="text-red-500 hover:text-red-700 text-[10px] font-medium px-2 py-0.5 rounded hover:bg-red-50"
-                                >
-                                  Remove
-                                </button>
-                              ) : (
-                                <button
-                                  onClick={() => addSection(course.id, course.title, {
-                                    id: section.id,
-                                    credits: section.credits,
-                                    meetings: section.meetings,
-                                    course_quality: section.course_quality,
-                                    difficulty: section.difficulty,
-                                    instructors: section.instructors,
-                                    activity: section.activity,
-                                  })}
-                                  className={`text-[10px] font-semibold px-2 py-0.5 rounded transition-colors ${
-                                    wouldConflict
-                                      ? "text-amber-600 bg-amber-50 hover:bg-amber-100"
-                                      : "text-blue-600 bg-blue-50 hover:bg-blue-100"
+                            )}
+                            {activityGroups[actType].map((section) => {
+                              const isAdded = scheduledSectionIds.has(section.id);
+                              const wouldConflict = !isAdded && scheduled.some((s) =>
+                                s.meetings.some((sm) =>
+                                  section.meetings.some((nm) => hasConflict(sm, nm))
+                                )
+                              );
+                              // Show warning if this is a LEC and it requires associated sections
+                              const needsAssociated = section.associated_sections.length > 0;
+                              const assocActivities = needsAssociated
+                                ? Array.from(new Set(section.associated_sections.map((a) => {
+                                    const found = sections.find((x) => x.id === a.id);
+                                    return found?.activity || a.activity || "section";
+                                  })))
+                                : [];
+
+                              return (
+                                <div
+                                  key={section.id}
+                                  className={`rounded-lg p-2.5 text-xs border transition-all ${
+                                    isAdded
+                                      ? "bg-emerald-50 border-emerald-200"
+                                      : wouldConflict
+                                      ? "bg-red-50/50 border-red-200/60"
+                                      : "bg-white border-slate-200 hover:border-blue-200"
                                   }`}
                                 >
-                                  {wouldConflict ? "Add (conflict)" : "+ Add"}
-                                </button>
-                              )}
-                            </div>
-                            <p className="text-slate-500">
-                              {formatMeetingTimes(section.meetings)}
-                            </p>
-                            {section.instructors.length > 0 && (
-                              <p className="text-slate-400 mt-0.5">
-                                {section.instructors.map((i) => i.name).join(", ")}
+                                  <div className="flex items-center justify-between mb-1">
+                                    <div className="flex items-center gap-1.5">
+                                      <span className="font-mono font-bold text-slate-800">
+                                        {section.id.split("-").pop()}
+                                      </span>
+                                      <span className="text-slate-400">{section.activity}</span>
+                                      {section.status === "C" && (
+                                        <span className="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-medium">Closed</span>
+                                      )}
+                                      {section.status === "O" && (
+                                        <span className="text-[10px] bg-emerald-100 text-emerald-600 px-1.5 py-0.5 rounded font-medium">Open</span>
+                                      )}
+                                    </div>
+                                    {isAdded ? (
+                                      <button
+                                        onClick={() => removeSection(section.id)}
+                                        className="text-red-500 hover:text-red-700 text-[10px] font-medium px-2 py-0.5 rounded hover:bg-red-50"
+                                      >
+                                        Remove
+                                      </button>
+                                    ) : (
+                                      <button
+                                        onClick={() => addSection(course.id, course.title, {
+                                          id: section.id,
+                                          credits: section.credits,
+                                          meetings: section.meetings,
+                                          course_quality: section.course_quality,
+                                          difficulty: section.difficulty,
+                                          instructors: section.instructors,
+                                          activity: section.activity,
+                                        })}
+                                        className={`text-[10px] font-semibold px-2 py-0.5 rounded transition-colors ${
+                                          wouldConflict
+                                            ? "text-amber-600 bg-amber-50 hover:bg-amber-100"
+                                            : "text-blue-600 bg-blue-50 hover:bg-blue-100"
+                                        }`}
+                                      >
+                                        {wouldConflict ? "Add (conflict)" : "+ Add"}
+                                      </button>
+                                    )}
+                                  </div>
+                                  <p className="text-slate-500">
+                                    {formatMeetingTimes(section.meetings)}
+                                  </p>
+                                  {section.instructors.length > 0 && (
+                                    <p className="text-slate-400 mt-0.5">
+                                      {section.instructors.map((i) => i.name).join(", ")}
+                                    </p>
+                                  )}
+                                  {section.meetings[0]?.room && (
+                                    <p className="text-slate-400 mt-0.5">{section.meetings[0].room}</p>
+                                  )}
+                                  {isAdded && needsAssociated && assocActivities.length > 0 && (
+                                    <p className="text-amber-600 mt-1 font-medium">
+                                      ⚠ Also pick a {assocActivities.join(" and ")} below
+                                    </p>
+                                  )}
+                                </div>
+                              );
+                            })}
+                            {/* Warning if LEC/SEM is added but required associated type is not */}
+                            {hasMultipleTypes && requiredActivities.has(actType) &&
+                              scheduledCourseIds.has(course.id) &&
+                              !scheduledActivitiesForCourse.has(actType) && (
+                              <p className="text-[10px] text-amber-600 font-medium px-1 py-1">
+                                ⚠ You need to select a {actType === "LAB" ? "lab" : actType === "REC" ? "recitation" : actType.toLowerCase()} for this course
                               </p>
                             )}
-                            {section.meetings[0]?.room && (
-                              <p className="text-slate-400 mt-0.5">{section.meetings[0].room}</p>
-                            )}
                           </div>
-                        );
-                      })}
+                        ));
+                      })()}
                     </div>
                   )}
                 </div>
