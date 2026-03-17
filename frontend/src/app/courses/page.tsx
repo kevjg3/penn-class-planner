@@ -17,6 +17,7 @@ export default function CourseFinder() {
   const [minQuality, setMinQuality] = useState("");
   const [attributes, setAttributes] = useState("");
   const [selectedCourse, setSelectedCourse] = useState<CourseListItem | null>(null);
+  const [hoveredCourse, setHoveredCourse] = useState<string | null>(null);
   const [addSemester, setAddSemester] = useState("2026C");
   const [addStatus, setAddStatus] = useState("completed");
   const [resultLimit, setResultLimit] = useState(50);
@@ -173,32 +174,77 @@ export default function CourseFinder() {
           <p className="text-xs font-medium text-slate-500 mb-3">
             {courses.length} courses found
           </p>
-          {courses.map((course) => (
-            <div
-              key={course.id}
-              className="bg-white rounded-xl border border-slate-200 p-4 hover:border-blue-200 hover:shadow-sm transition-all cursor-pointer group"
-              onClick={() => setSelectedCourse(course)}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3 min-w-0">
-                  <span className="font-mono font-bold text-sm text-blue-700 flex-shrink-0">
-                    {course.id}
-                  </span>
-                  <span className="text-sm text-slate-700 truncate">{course.title}</span>
-                  <span className="text-xs text-slate-400 flex-shrink-0">
-                    {course.credits} CU
-                  </span>
+          {courses.map((course) => {
+            const isHovered = hoveredCourse === course.id;
+            return (
+              <div
+                key={course.id}
+                className="bg-white rounded-xl border border-slate-200 hover:border-blue-200 hover:shadow-sm transition-all group"
+                onMouseEnter={() => setHoveredCourse(course.id)}
+                onMouseLeave={() => setHoveredCourse(null)}
+              >
+                <div className="flex items-center justify-between p-4">
+                  <div
+                    className="flex items-center gap-3 min-w-0 cursor-pointer"
+                    onClick={() => setSelectedCourse(course)}
+                  >
+                    <span className="font-mono font-bold text-sm text-blue-700 flex-shrink-0">
+                      {course.id}
+                    </span>
+                    <span className="text-sm text-slate-700 truncate">{course.title}</span>
+                    <span className="text-xs text-slate-400 flex-shrink-0">
+                      {course.credits} CU
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3 flex-shrink-0">
+                    <RatingBadge value={course.course_quality} label="Quality" />
+                    <DifficultyMeter value={course.difficulty} />
+                  </div>
                 </div>
-                <div className="flex items-center gap-3 flex-shrink-0">
-                  <RatingBadge value={course.course_quality} label="Quality" />
-                  <DifficultyMeter value={course.difficulty} />
-                  <span className="text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity text-xs font-medium">
-                    + Add
-                  </span>
-                </div>
+                {/* Inline quick-add controls on hover */}
+                {isHovered && (
+                  <div className="border-t border-slate-100 px-4 py-2.5 flex items-center gap-2 bg-slate-50/80 animate-in fade-in duration-150">
+                    <select
+                      value={addStatus}
+                      onChange={(e) => { e.stopPropagation(); setAddStatus(e.target.value); }}
+                      onClick={(e) => e.stopPropagation()}
+                      className="border border-slate-200 rounded-lg px-2 py-1.5 text-xs text-slate-700 bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+                    >
+                      <option value="completed">Completed</option>
+                      <option value="in_progress">In Progress</option>
+                      <option value="planned">Planned</option>
+                    </select>
+                    <select
+                      value={addSemester}
+                      onChange={(e) => { e.stopPropagation(); setAddSemester(e.target.value); }}
+                      onClick={(e) => e.stopPropagation()}
+                      className="border border-slate-200 rounded-lg px-2 py-1.5 text-xs text-slate-700 bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+                    >
+                      <option value="">No Semester</option>
+                      <option value="2022C">Fall 2022</option>
+                      <option value="2023A">Spring 2023</option>
+                      <option value="2023C">Fall 2023</option>
+                      <option value="2024A">Spring 2024</option>
+                      <option value="2024C">Fall 2024</option>
+                      <option value="2025A">Spring 2025</option>
+                      <option value="2025C">Fall 2025</option>
+                      <option value="2026A">Spring 2026</option>
+                      <option value="2026C">Fall 2026</option>
+                      <option value="2027A">Spring 2027</option>
+                      <option value="2027C">Fall 2027</option>
+                    </select>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleAdd(course); }}
+                      disabled={addCourse.isPending}
+                      className="ml-auto bg-blue-600 text-white rounded-lg px-3 py-1.5 text-xs font-semibold hover:bg-blue-700 disabled:opacity-50 transition-colors shadow-sm"
+                    >
+                      {addCourse.isPending ? "Adding..." : "+ Add to Plan"}
+                    </button>
+                  </div>
+                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
           {courses.length >= resultLimit && (
             <button
               onClick={() => setResultLimit((prev) => prev + 50)}
