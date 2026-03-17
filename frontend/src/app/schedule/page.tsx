@@ -181,6 +181,7 @@ export default function SchedulePage() {
   const [expandedCourse, setExpandedCourse] = useState<string | null>(null);
   const [attribute, setAttribute] = useState("");
   const [maxDifficulty, setMaxDifficulty] = useState("");
+  const [resultLimit, setResultLimit] = useState(50);
   const [hydrated, setHydrated] = useState(false);
 
   // Load from localStorage on mount
@@ -208,12 +209,15 @@ export default function SchedulePage() {
     queryFn: api.getAttributes,
   });
 
+  const resetAndSet = <T,>(setter: (v: T) => void) => (v: T) => { setter(v); setResultLimit(50); };
+
   const searchParams: Record<string, string> = {};
   if (query) searchParams.q = query;
   if (department) searchParams.department = department;
   if (attribute) searchParams.attributes = attribute;
   if (maxDifficulty) searchParams.max_difficulty = maxDifficulty;
-  const hasSearch = Object.keys(searchParams).length > 0;
+  searchParams.limit = String(resultLimit);
+  const hasSearch = !!(query || department || attribute || maxDifficulty);
   const { data: courses, isLoading: searchLoading } = useSearchCourses(searchParams, hasSearch);
 
   const { data: sectionData, isLoading: sectionsLoading } = useCourseSections(
@@ -354,7 +358,7 @@ export default function SchedulePage() {
               <input
                 type="text"
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={(e) => resetAndSet(setQuery)(e.target.value)}
                 placeholder="Search courses..."
                 className="w-full border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-400"
               />
@@ -362,7 +366,7 @@ export default function SchedulePage() {
             <div className="grid grid-cols-2 gap-2 mb-2">
               <select
                 value={department}
-                onChange={(e) => setDepartment(e.target.value)}
+                onChange={(e) => resetAndSet(setDepartment)(e.target.value)}
                 className="w-full border border-slate-200 rounded-xl px-2.5 py-2 text-xs text-slate-900 bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/40"
               >
                 <option value="">All Depts</option>
@@ -376,14 +380,14 @@ export default function SchedulePage() {
                 min="0"
                 max="4"
                 value={maxDifficulty}
-                onChange={(e) => setMaxDifficulty(e.target.value)}
+                onChange={(e) => resetAndSet(setMaxDifficulty)(e.target.value)}
                 placeholder="Max Diff"
                 className="w-full border border-slate-200 rounded-xl px-2.5 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
               />
             </div>
             <select
               value={attribute}
-              onChange={(e) => setAttribute(e.target.value)}
+              onChange={(e) => resetAndSet(setAttribute)(e.target.value)}
               className="w-full border border-slate-200 rounded-xl px-2.5 py-2 text-xs text-slate-900 bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/40"
             >
               <option value="">All Attributes</option>
@@ -425,6 +429,7 @@ export default function SchedulePage() {
                       </div>
                       <div className="flex items-center gap-1.5 flex-shrink-0 ml-2">
                         <RatingBadge value={course.course_quality} label="Q" />
+                        <RatingBadge value={course.difficulty} label="D" invert />
                         <svg
                           className={`w-3.5 h-3.5 text-slate-400 transition-transform ${isExpanded ? "rotate-180" : ""}`}
                           fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
@@ -593,6 +598,16 @@ export default function SchedulePage() {
                 </div>
               );
             })}
+
+            {/* Load More */}
+            {courses && courses.length >= resultLimit && (
+              <button
+                onClick={() => setResultLimit((prev) => prev + 50)}
+                className="w-full py-2 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors"
+              >
+                Load More
+              </button>
+            )}
 
             {/* Cart */}
             {scheduled.length > 0 && (

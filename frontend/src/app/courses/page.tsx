@@ -19,6 +19,10 @@ export default function CourseFinder() {
   const [selectedCourse, setSelectedCourse] = useState<CourseListItem | null>(null);
   const [addSemester, setAddSemester] = useState("2026C");
   const [addStatus, setAddStatus] = useState("completed");
+  const [resultLimit, setResultLimit] = useState(50);
+
+  // Reset limit when filters change
+  const resetAndSet = <T,>(setter: (v: T) => void) => (v: T) => { setter(v); setResultLimit(50); };
 
   // Load departments & attributes from DB
   const { data: departments } = useQuery({
@@ -36,9 +40,10 @@ export default function CourseFinder() {
   if (maxDifficulty) searchParams.max_difficulty = maxDifficulty;
   if (minQuality) searchParams.min_quality = minQuality;
   if (attributes) searchParams.attributes = attributes;
+  searchParams.limit = String(resultLimit);
 
-  const hasSearch = Object.keys(searchParams).length > 0;
-  const { data: courses, isLoading } = useSearchCourses(searchParams, hasSearch);
+  const hasSearch = query || department || maxDifficulty || minQuality || attributes;
+  const { data: courses, isLoading } = useSearchCourses(searchParams, !!hasSearch);
   const addCourse = useAddPlanCourse();
 
   const handleAdd = async (course: CourseListItem) => {
@@ -76,7 +81,7 @@ export default function CourseFinder() {
               <input
                 type="text"
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={(e) => resetAndSet(setQuery)(e.target.value)}
                 placeholder="Course code or title... (e.g. CIS 1200 or Data Structures)"
                 className="w-full border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-400 transition-all"
               />
@@ -88,7 +93,7 @@ export default function CourseFinder() {
             </label>
             <select
               value={department}
-              onChange={(e) => setDepartment(e.target.value)}
+              onChange={(e) => resetAndSet(setDepartment)(e.target.value)}
               className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-400 transition-all cursor-pointer"
             >
               <option value="">All Departments</option>
@@ -105,7 +110,7 @@ export default function CourseFinder() {
             </label>
             <select
               value={attributes}
-              onChange={(e) => setAttributes(e.target.value)}
+              onChange={(e) => resetAndSet(setAttributes)(e.target.value)}
               className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-400 transition-all cursor-pointer"
             >
               <option value="">All Attributes</option>
@@ -126,7 +131,7 @@ export default function CourseFinder() {
               min="0"
               max="4"
               value={maxDifficulty}
-              onChange={(e) => setMaxDifficulty(e.target.value)}
+              onChange={(e) => resetAndSet(setMaxDifficulty)(e.target.value)}
               placeholder="e.g. 2.5"
               className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-400 transition-all"
             />
@@ -141,7 +146,7 @@ export default function CourseFinder() {
               min="0"
               max="4"
               value={minQuality}
-              onChange={(e) => setMinQuality(e.target.value)}
+              onChange={(e) => resetAndSet(setMinQuality)(e.target.value)}
               placeholder="e.g. 3.0"
               className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-400 transition-all"
             />
@@ -194,6 +199,14 @@ export default function CourseFinder() {
               </div>
             </div>
           ))}
+          {courses.length >= resultLimit && (
+            <button
+              onClick={() => setResultLimit((prev) => prev + 50)}
+              className="w-full py-3 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors mt-2"
+            >
+              Load More Courses
+            </button>
+          )}
         </div>
       )}
 
@@ -218,7 +231,7 @@ export default function CourseFinder() {
 
             <div className="flex gap-2 my-4">
               <RatingBadge value={selectedCourse.course_quality} label="Quality" />
-              <RatingBadge value={selectedCourse.difficulty} label="Difficulty" />
+              <RatingBadge value={selectedCourse.difficulty} label="Difficulty" invert />
               <RatingBadge value={selectedCourse.instructor_quality} label="Instructor" />
             </div>
 

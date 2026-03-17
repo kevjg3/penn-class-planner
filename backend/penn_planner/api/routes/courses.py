@@ -63,7 +63,7 @@ async def search_courses(
     max_difficulty: float | None = None,
     min_quality: float | None = None,
     satisfies_requirement: str | None = None,
-    limit: int = Query(default=50, le=200),
+    limit: int = Query(default=50, le=500),
     offset: int = 0,
     session: AsyncSession = Depends(get_session),
 ):
@@ -97,7 +97,10 @@ async def search_courses(
             CourseAttribute.attribute_code.in_(attr_codes)
         ).distinct()
 
-    stmt = stmt.order_by(Course.id).offset(offset).limit(limit)
+    # Prioritize courses with ratings over N/A, then by quality descending
+    from sqlalchemy import case, desc
+    has_rating = case((Course.course_quality.isnot(None), 0), else_=1)
+    stmt = stmt.order_by(has_rating, desc(Course.course_quality), Course.id).offset(offset).limit(limit)
     result = await session.execute(stmt)
     courses = result.scalars().all()
     return [CourseListSchema.model_validate(c) for c in courses]
