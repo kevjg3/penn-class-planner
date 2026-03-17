@@ -16,17 +16,20 @@ from penn_planner.schemas import (
     RequirementStatusSchema,
 )
 from penn_planner.services.requirement_engine import RequirementEngine
+from penn_planner.api.deps import get_session_id
 
 router = APIRouter(prefix="/requirements", tags=["requirements"])
 
 
-async def _build_context(session: AsyncSession, program: str = "seas_cs_bse"):
+async def _build_context(session: AsyncSession, program: str = "seas_cs_bse", session_id: str = ""):
     """Build requirement engine context from DB state."""
     engine = RequirementEngine(program)
 
-    # Load plan courses with attributes
+    # Load plan courses with attributes for this session
     result = await session.execute(
-        select(PlanCourse).options(
+        select(PlanCourse)
+        .where(PlanCourse.session_id == session_id)
+        .options(
             selectinload(PlanCourse.course),
             selectinload(PlanCourse.assignments),
         )
@@ -61,9 +64,10 @@ async def list_programs():
 async def get_progress(
     program: str = "seas_cs_bse",
     session: AsyncSession = Depends(get_session),
+    session_id: str = Depends(get_session_id),
 ):
     """Get current degree progress."""
-    engine, completed_courses, assignments, _ = await _build_context(session, program)
+    engine, completed_courses, assignments, _ = await _build_context(session, program, session_id)
     evaluation = engine.evaluate_plan(completed_courses, assignments)
 
     return PlanEvaluationSchema(
@@ -96,10 +100,11 @@ async def get_progress(
 async def assign_course(
     body: AssignmentRequest,
     session: AsyncSession = Depends(get_session),
+    session_id: str = Depends(get_session_id),
 ):
     """Manually assign a plan course to a requirement slot."""
     pc = await session.get(PlanCourse, body.plan_course_id)
-    if not pc:
+    if not pc or pc.session_id != session_id:
         raise HTTPException(status_code=404, detail="Plan course not found")
 
     # Check if requirement is already assigned
@@ -129,6 +134,7 @@ async def assign_course(
 async def unassign_course(
     assignment_id: int,
     session: AsyncSession = Depends(get_session),
+    session_id: str = Depends(get_session_id),
 ):
     assignment = await session.get(RequirementAssignment, assignment_id)
     if not assignment:
@@ -144,6 +150,7 @@ async def get_slot_candidates(
     program: str = "seas_cs_bse",
     q: str = "",
     session: AsyncSession = Depends(get_session),
+    session_id: str = Depends(get_session_id),
 ):
     """Given a requirement slot, find courses that could fill it.
     Searches the DB for matching courses (by attribute or specific ID).
@@ -276,8 +283,10 @@ async def get_slot_candidates(
             result = await session.execute(stmt)
             courses = result.scalars().all()
 
-    # Exclude courses already in the plan
-    plan_result = await session.execute(select(PlanCourse))
+    # Exclude courses already in this user's plan
+    plan_result = await session.execute(
+        select(PlanCourse).where(PlanCourse.session_id == session_id)
+    )
     plan_course_ids = {pc.course_id for pc in plan_result.scalars()}
 
     return [
@@ -297,9 +306,10 @@ async def get_slot_candidates(
 async def auto_assign(
     program: str = "seas_cs_bse",
     session: AsyncSession = Depends(get_session),
+    session_id: str = Depends(get_session_id),
 ):
     """Auto-assign all plan courses to optimal requirement slots."""
-    engine, completed_courses, _, plan_courses = await _build_context(session, program)
+    engine, completed_courses, _, plan_courses = await _build_context(session, program, session_id)
 
     # Clear existing assignments
     for pc in plan_courses:
@@ -342,6 +352,7 @@ async def generate_plan(
     program: str = "seas_cs_bse",
     prefer_easy: bool = True,
     session: AsyncSession = Depends(get_session),
+    session_id: str = Depends(get_session_id),
 ):
     """Generate a tentative plan to complete all remaining degree requirements.
 
@@ -351,7 +362,7 @@ async def generate_plan(
     multiple slots.
     """
     engine, completed_courses, assignments, plan_courses = await _build_context(
-        session, program
+        session, program, session_id
     )
 
     # Count already completed

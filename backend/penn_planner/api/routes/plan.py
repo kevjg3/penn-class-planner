@@ -14,17 +14,20 @@ from penn_planner.schemas import (
     UpdatePlanCourseRequest,
 )
 from penn_planner.services.requirement_engine import RequirementEngine
+from penn_planner.api.deps import get_session_id
 
 router = APIRouter(prefix="/plan", tags=["plan"])
 
 
 async def _run_auto_assign(
     session: AsyncSession,
+    session_id: str = "",
     pinned: dict[str, str] | None = None,
 ):
     """Re-run auto-assign for all plan courses after any plan change.
 
     Args:
+        session_id: user session ID to scope the operation.
         pinned: optional dict of {requirement_id: course_id} that must be
                 respected — these assignments are created first and the
                 auto-assign algorithm works around them.
@@ -32,14 +35,22 @@ async def _run_auto_assign(
     pinned = pinned or {}
 
     # Get current program
-    pref = await session.get(UserPreference, "selected_program")
+    pref_result = await session.execute(
+        select(UserPreference).where(
+            UserPreference.session_id == session_id,
+            UserPreference.key == "selected_program",
+        )
+    )
+    pref = pref_result.scalar_one_or_none()
     program = pref.value if pref else "seas_cs_bse"
 
     engine = RequirementEngine(program)
 
-    # Load all plan courses
+    # Load all plan courses for this session
     result = await session.execute(
-        select(PlanCourse).options(
+        select(PlanCourse)
+        .where(PlanCourse.session_id == session_id)
+        .options(
             selectinload(PlanCourse.course),
             selectinload(PlanCourse.assignments),
         )
@@ -95,9 +106,11 @@ async def list_plan_courses(
     status: str | None = None,
     semester: str | None = None,
     session: AsyncSession = Depends(get_session),
+    session_id: str = Depends(get_session_id),
 ):
     stmt = (
         select(PlanCourse)
+        .where(PlanCourse.session_id == session_id)
         .options(selectinload(PlanCourse.course), selectinload(PlanCourse.assignments))
     )
     if status:
@@ -114,6 +127,7 @@ async def list_plan_courses(
 async def add_plan_course(
     body: AddPlanCourseRequest,
     session: AsyncSession = Depends(get_session),
+    session_id: str = Depends(get_session_id),
 ):
     # Verify course exists in DB
     course = await session.get(Course, body.course_id)
@@ -122,9 +136,12 @@ async def add_plan_course(
         course = Course(id=body.course_id, title=body.course_id)
         session.add(course)
 
-    # Check for duplicate
+    # Check for duplicate within this user's plan
     existing = await session.execute(
-        select(PlanCourse).where(PlanCourse.course_id == body.course_id)
+        select(PlanCourse).where(
+            PlanCourse.course_id == body.course_id,
+            PlanCourse.session_id == session_id,
+        )
     )
     if existing.scalar_one_or_none():
         raise HTTPException(status_code=409, detail=f"Course {body.course_id} already in plan")
@@ -133,6 +150,7 @@ async def add_plan_course(
         course_id=body.course_id,
         semester=body.semester,
         status=body.status,
+        session_id=session_id,
     )
     session.add(pc)
     await session.flush()
@@ -143,7 +161,7 @@ async def add_plan_course(
         pinned[body.target_requirement_id] = body.course_id
 
     # Auto-assign all courses to requirements, respecting pinned
-    await _run_auto_assign(session, pinned=pinned)
+    await _run_auto_assign(session, session_id=session_id, pinned=pinned)
 
     await session.commit()
     await session.refresh(pc, ["course", "assignments"])
@@ -155,9 +173,10 @@ async def update_plan_course(
     plan_course_id: int,
     body: UpdatePlanCourseRequest,
     session: AsyncSession = Depends(get_session),
+    session_id: str = Depends(get_session_id),
 ):
     pc = await session.get(PlanCourse, plan_course_id)
-    if not pc:
+    if not pc or pc.session_id != session_id:
         raise HTTPException(status_code=404, detail="Plan course not found")
 
     if body.semester is not None:
@@ -168,7 +187,7 @@ async def update_plan_course(
         pc.grade = body.grade
 
     # Re-run auto-assign after status change
-    await _run_auto_assign(session)
+    await _run_auto_assign(session, session_id=session_id)
 
     await session.commit()
     await session.refresh(pc, ["course", "assignments"])
@@ -179,9 +198,10 @@ async def update_plan_course(
 async def remove_plan_course(
     plan_course_id: int,
     session: AsyncSession = Depends(get_session),
+    session_id: str = Depends(get_session_id),
 ):
     pc = await session.get(PlanCourse, plan_course_id)
-    if not pc:
+    if not pc or pc.session_id != session_id:
         raise HTTPException(status_code=404, detail="Plan course not found")
 
     # Delete assignments first
@@ -195,7 +215,7 @@ async def remove_plan_course(
     await session.flush()
 
     # Re-run auto-assign for remaining courses
-    await _run_auto_assign(session)
+    await _run_auto_assign(session, session_id=session_id)
 
     await session.commit()
     return {"deleted": True}

@@ -1,10 +1,25 @@
 const BACKEND = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 const BASE = `${BACKEND}/api/v1`;
 
+function getSessionId(): string {
+  if (typeof window === "undefined") return "server";
+  const KEY = "penn-planner-session-id";
+  let id = localStorage.getItem(KEY);
+  if (!id) {
+    id = crypto.randomUUID();
+    localStorage.setItem(KEY, id);
+  }
+  return id;
+}
+
 async function fetchJSON<T>(url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE}${url}`, {
     ...init,
-    headers: { "Content-Type": "application/json", ...init?.headers },
+    headers: {
+      "Content-Type": "application/json",
+      "X-Session-ID": getSessionId(),
+      ...init?.headers,
+    },
   });
   if (!res.ok) {
     const text = await res.text().catch(() => "");

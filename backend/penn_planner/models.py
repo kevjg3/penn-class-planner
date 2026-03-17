@@ -44,6 +44,7 @@ class PlanCourse(Base):
     __tablename__ = "plan_courses"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    session_id: Mapped[str] = mapped_column(String, default="", index=True)
     course_id: Mapped[str] = mapped_column(String, ForeignKey("courses.id"))
     semester: Mapped[str] = mapped_column(String, default="")
     status: Mapped[str] = mapped_column(String, default="completed")  # completed, in_progress, planned
@@ -76,5 +77,7 @@ class Semester(Base):
 class UserPreference(Base):
     __tablename__ = "user_preferences"
 
-    key: Mapped[str] = mapped_column(String, primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    session_id: Mapped[str] = mapped_column(String, default="", index=True)
+    key: Mapped[str] = mapped_column(String)
     value: Mapped[str] = mapped_column(Text, default="")

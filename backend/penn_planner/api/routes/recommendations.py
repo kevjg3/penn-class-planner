@@ -12,6 +12,7 @@ from penn_planner.schemas import (
 )
 from penn_planner.services.recommendation_engine import RecommendationEngine
 from penn_planner.services.requirement_engine import RequirementEngine
+from penn_planner.api.deps import get_session_id
 
 router = APIRouter(prefix="/recommendations", tags=["recommendations"])
 
@@ -27,14 +28,17 @@ async def get_recommendations(
     attribute: str | None = None,
     department: str | None = None,
     session: AsyncSession = Depends(get_session),
+    session_id: str = Depends(get_session_id),
 ):
     """Get personalized course recommendations."""
     req_engine = RequirementEngine(program)
     rec_engine = RecommendationEngine(req_engine)
 
-    # Load plan courses
+    # Load plan courses for this session
     result = await session.execute(
-        select(PlanCourse).options(selectinload(PlanCourse.assignments))
+        select(PlanCourse)
+        .where(PlanCourse.session_id == session_id)
+        .options(selectinload(PlanCourse.assignments))
     )
     plan_courses = result.scalars().all()
 
